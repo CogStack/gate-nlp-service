@@ -1,0 +1,5 @@
+rootProject.name = 'nlp-rest-service'
+
+include 'common'
+include 'gateway'
+include 'service'

@@ -1,0 +1,51 @@
+version: '3.4'
+# version 3.4. introduces 'target' keyword used in Docker multi-stage builds
+
+
+#---------------------------------------------------------------------------#
+# Used services                                                             #
+#---------------------------------------------------------------------------#
+services:
+
+#---------------------------------------------------------------------------#
+# Postgres container with sample data                                       #
+#---------------------------------------------------------------------------#
+  gate-nlp:
+    build:
+      context: ..
+      target: service-runner-gate
+    volumes:
+      # configuration files
+      - ./service/config:/app/nlp-service/config:ro
+      - ./service/run.sh:/app/nlp-service/run.sh:ro
+      # GATE app: Bio-Yodie
+      - /Users/lroguski/devel/projects/github/bio-YODIE:/gate/app/bioyodie:ro
+      - /Users/lroguski/data/UMLS/from-Hegler/bio-yodie-resources:/gate/app/bioyodie/bio-yodie-resources:ro
+#    environment:
+#      - "POSTGRES_PASSWORD=postgresadminpass"
+    ports:
+      # <host:container> expose the postgres DB to host for debugging purposes
+      - "8091:8091"
+    command: bash /app/nlp-service/run.sh
+
+#---------------------------------------------------------------------------#
+# CogStack-Pipeline related containers                                      #
+#---------------------------------------------------------------------------#
+  gateway:
+    build:
+      context: ..
+      target: gateway-runner
+    #environment:
+      #- SERVICES_USED=cogstack-job-repo:5432,samples-db:5432,elasticsearch-1:9200
+      #- LOG_LEVEL=info
+      #- LOG_FILE_NAME=cogstack_job_log
+      #- FILE_LOG_LEVEL=off
+    volumes:
+      - ./gateway/config:/app/gateway/config:ro
+      - ./gateway/services:/app/gateway/services:ro
+      - ./gateway/run.sh:/app/gateway/run.sh:ro
+    depends_on:
+      - gate-nlp
+    ports:
+      - "8090:8090"
+    command: bash /app/gateway/run.sh
