@@ -13,10 +13,7 @@ import org.springframework.core.io.Resource;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 
 /**
@@ -46,7 +43,8 @@ public class ServicesConfig {
     Map<String, ServiceDefinition> servicesDefinition() {
         Map<String, ServiceDefinition> endpoints = new HashMap<>();
 
-        loadAllServiceProperties().entrySet().forEach(entry -> {
+        Map<String, Properties> serviceProperties = loadAllServiceProperties();
+        serviceProperties.entrySet().forEach(entry -> {
             Properties endpointProps = entry.getValue();
             endpoints.put(entry.getKey(), ServiceDefinition.builder()
                     .name(endpointProps.getProperty("name"))
@@ -73,12 +71,16 @@ public class ServicesConfig {
                 new PathResource(filename),
                 new PathResource(getPropertiesFilePath(filename))
         };
-        Resource resource = stream(possiblePropertiesResources)
+        Optional<Resource> availableResource = stream(possiblePropertiesResources)
                 .filter(Resource::exists)
-                .reduce((previous, current) -> current)
-                .get();
-        Properties properties = new Properties();
+                .reduce((previous, current) -> current);
 
+        if (!availableResource.isPresent()) {
+            throw new RuntimeException("No resources available for provided filename: " + filename);
+        }
+        Resource resource = availableResource.get();
+
+        Properties properties = new Properties();
         try {
             properties.load(resource.getInputStream());
         } catch(IOException exception) {

@@ -4,6 +4,7 @@ import nlp.common.model.protocol.NlpProcessingResult;
 import nlp.common.model.protocol.ProcessingError;
 import nlp.common.model.protocol.ServiceRequestContent;
 import nlp.common.model.protocol.ServiceResponseContent;
+import nlp.service.config.ApplicationConfiguration;
 import nlp.service.config.ServiceConfiguration;
 import nlp.service.service.NlpService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,8 +69,9 @@ public class ServiceController {
      * Returns the information about running NLP service, incl. its configuration.
      */
     @GetMapping(value = apiFullPath + "/info")
-    public ResponseEntity<ServiceConfiguration> info() {
-        return new ResponseEntity<>(config, HttpStatus.OK);
+    public ResponseEntity<ApplicationConfiguration> info() {
+        ApplicationConfiguration conf = config.getAppConfig();
+        return new ResponseEntity<>(conf, HttpStatus.OK);
     }
 
 

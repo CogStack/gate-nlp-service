@@ -9,18 +9,34 @@ services:
 #---------------------------------------------------------------------------#
 # Postgres container with sample data                                       #
 #---------------------------------------------------------------------------#
-  gate-nlp:
+  gate-nlp-drug:
     build:
       context: ..
       target: service-runner-gate
     volumes:
       # configuration files
-      - ./service/config:/app/nlp-service/config:ro
+      - ./service/config/example-drug:/app/nlp-service/config:ro
       - ./service/run.sh:/app/nlp-service/run.sh:ro
       # GATE app: example drug app
       - ../resources/gate/drug-app:/gate/app/drug-app:ro
     ports:
-      - "8091:8091"
+      - "8095:8095"
+    command: bash /app/nlp-service/run.sh
+
+  gate-nlp-bioyodie:
+    build:
+      context: ..
+      target: service-runner-gate
+    volumes:
+    # configuration files
+    - ./service/config/bioyodie:/app/nlp-service/config:ro
+    - ./service/run.sh:/app/nlp-service/run.sh:ro
+    # GATE app: bioyodie
+    # needs to configure the paths for application and UMLS resources
+    - /Users/lroguski/devel/projects/github/bio-YODIE:/gate/app/bioyodie:ro
+    - /Users/lroguski/data/UMLS/for-bioyodie/bio-yodie-resources:/gate/app/bioyodie/bio-yodie-resources:ro
+    ports:
+    - "8096:8095"
     command: bash /app/nlp-service/run.sh
 
 #---------------------------------------------------------------------------#
@@ -35,7 +51,8 @@ services:
       - ./gateway/services:/app/gateway/services:ro
       - ./gateway/run.sh:/app/gateway/run.sh:ro
     depends_on:
-      - gate-nlp
+      - gate-nlp-drug
+      - gate-nlp-bioyodie
     ports:
       - "8090:8090"
     command: bash /app/gateway/run.sh

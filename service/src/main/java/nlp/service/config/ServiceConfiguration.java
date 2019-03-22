@@ -7,6 +7,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -46,4 +47,13 @@ public class ServiceConfiguration {
     @Value("${application.class.name}")
     @JsonIgnore
     String appClassName;
+
+    public ApplicationConfiguration getAppConfig() {
+        return ApplicationConfiguration.builder()
+                .name(appName)
+                .version(appVersion)
+                .language(appLanguage)
+                .parameters(appParams)
+                .build();
+    }
 }

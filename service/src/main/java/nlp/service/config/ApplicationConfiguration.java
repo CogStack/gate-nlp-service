@@ -1,6 +1,7 @@
 package nlp.service.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import java.util.Map;
  * The configuration of the NLP application that will be exposed to the API.
  */
 @Data
+@Builder
 public class ApplicationConfiguration {
 
     @JsonProperty("name")
