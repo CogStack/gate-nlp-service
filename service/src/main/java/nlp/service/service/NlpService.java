@@ -18,7 +18,7 @@ public abstract class NlpService {
     private ServiceConfiguration config;
 
 
-    NlpService(ServiceConfiguration config) {
+    public NlpService(ServiceConfiguration config) {
         this.config = config;
      }
 

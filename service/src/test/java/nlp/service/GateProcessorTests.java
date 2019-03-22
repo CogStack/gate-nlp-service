@@ -1,8 +1,8 @@
 package nlp.service;
 
 import nlp.common.model.document.GenericDocument;
-import nlp.service.processor.GateApplicationParameters;
-import nlp.service.processor.GateProcessor;
+import nlp.service.gate.processor.GateApplicationParameters;
+import nlp.service.gate.processor.GateProcessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

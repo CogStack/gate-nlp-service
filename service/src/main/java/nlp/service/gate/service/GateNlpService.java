@@ -1,14 +1,15 @@
-package nlp.service.service;
+package nlp.service.gate.service;
 
 import nlp.common.model.document.GenericDocument;
 import nlp.common.model.protocol.NlpInputPayload;
 import nlp.common.model.protocol.NlpProcessingResult;
 import nlp.common.model.protocol.ProcessingError;
 import nlp.service.config.ServiceConfiguration;
-import nlp.service.data.GateNlpContentDataMapper;
-import nlp.service.data.GateNlpResultDataMapper;
-import nlp.service.processor.GateApplicationParameters;
-import nlp.service.processor.GateProcessor;
+import nlp.service.gate.data.GateNlpContentDataMapper;
+import nlp.service.gate.data.GateNlpResultDataMapper;
+import nlp.service.gate.processor.GateApplicationParameters;
+import nlp.service.gate.processor.GateProcessor;
+import nlp.service.service.NlpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Map;

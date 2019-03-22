@@ -1,4 +1,4 @@
-package nlp.service.utils;
+package nlp.service.gate.utils;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import nlp.service.model.annotation.AtomicGateAnnotation;
+import nlp.service.gate.annotation.model.AtomicGateAnnotation;
 import nlp.common.model.annotation.TextAnnotation;
 import gate.Document;
 import gate.AnnotationSet;

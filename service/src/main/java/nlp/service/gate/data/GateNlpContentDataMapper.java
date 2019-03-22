@@ -1,4 +1,4 @@
-package nlp.service.data;
+package nlp.service.gate.data;
 
 import java.util.Collections;
 import java.util.HashMap;

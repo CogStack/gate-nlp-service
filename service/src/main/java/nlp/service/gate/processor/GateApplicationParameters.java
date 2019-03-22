@@ -1,4 +1,4 @@
-package nlp.service.processor;
+package nlp.service.gate.processor;
 
 import lombok.Data;
 

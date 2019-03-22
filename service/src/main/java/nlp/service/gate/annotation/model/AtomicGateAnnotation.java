@@ -1,4 +1,4 @@
-package nlp.service.model.annotation;
+package nlp.service.gate.annotation.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

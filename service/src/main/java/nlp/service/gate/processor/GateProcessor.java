@@ -1,4 +1,4 @@
-package nlp.service.processor;
+package nlp.service.gate.processor;
 
 import java.io.File;
 import java.util.List;
@@ -15,8 +15,8 @@ import gate.Gate;
 import gate.Document;
 import gate.util.persistence.PersistenceManager;
 import nlp.common.model.document.GenericDocument;
-import nlp.service.utils.GateUtils;
-import nlp.service.model.annotation.AtomicGateAnnotation;
+import nlp.service.gate.utils.GateUtils;
+import nlp.service.gate.annotation.model.AtomicGateAnnotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package nlp.service.data;
+package nlp.service.gate.data;
 
 import java.util.List;
 import nlp.common.model.annotation.GenericAnnotation;
