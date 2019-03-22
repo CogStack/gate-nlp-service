@@ -22,6 +22,11 @@ For the moment, the Gateway serves only as a proxy between the internal NLP serv
 In the next step, ther Gateway should expose the API compatible with [NLPRP REST API](https://crateanon.readthedocs.io/en/latest/nlp/nlprp.html) and allow for handling multiple NLP services with parallel processing and queueing mechanisms.
 
 
+# Building
+
+The detailed instructions on building individual applications are provided in their respecive package directories.
+
+
 # Usage
 
 For the moment, for the ease of use, please use the individual NLP service wrapper as a standalone service. The detailed instructions on it's use are available in `service` directory.
