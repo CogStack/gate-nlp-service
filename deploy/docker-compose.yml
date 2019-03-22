@@ -7,7 +7,7 @@ version: '3.4'
 services:
 
 #---------------------------------------------------------------------------#
-# Postgres container with sample data                                       #
+# NLP services                                                              #
 #---------------------------------------------------------------------------#
   gate-nlp-drug:
     build:
@@ -40,7 +40,7 @@ services:
     command: bash /app/nlp-service/run.sh
 
 #---------------------------------------------------------------------------#
-# CogStack-Pipeline related containers                                      #
+# Gateway                                                                   #
 #---------------------------------------------------------------------------#
   gateway:
     build:
