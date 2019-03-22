@@ -64,8 +64,10 @@ public class GateProcessor {
         parseAdditionalAppParams(params);
         log.info("GATE NLP application configuration set");
 
-        // decrease verbosity of some of the GATE plugins
-        LogManager.getLogManager().getLogger("HeidelTimeWrapper").setLevel(Level.WARNING);
+        // decrease verbosity of some of the GATE plugins (if used)
+        if (LogManager.getLogManager().getLogger("HeidelTimeWrapper") != null) {
+            LogManager.getLogManager().getLogger("HeidelTimeWrapper").setLevel(Level.WARNING);
+        }
     }
 
 
