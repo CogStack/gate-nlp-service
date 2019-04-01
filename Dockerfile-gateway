@@ -19,9 +19,9 @@ RUN apt-get update && \
 
 ################################
 #
-# Service Builder
+# Gateway Builder
 #
-FROM jdk-11-base AS service-builder
+FROM jdk-11-base AS gateway-builder
 
 # setup the build environment
 RUN mkdir -p /devel
@@ -36,8 +36,8 @@ COPY ./settings.gradle /devel/
 COPY . /devel/
 
 
-# build service
-RUN ./gradlew :service:bootJar --no-daemon
+# build gateway
+RUN ./gradlew :gateway:bootJar --no-daemon
 
 
 
