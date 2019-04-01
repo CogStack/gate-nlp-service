@@ -146,12 +146,10 @@ RUN curl -L 'https://github.com/GateNLP/gcp/releases/download/v3.0/gcp-dist-3.0-
 	mv gcp-dist-3.0 gcp && \
 	rm gcp-dist-3.0-distro.zip
 
-# TODO: populate the local maven repository with GATE plugins
-# ....
 
-
-#WORKDIR /app/nlp-service
+# copy the helper scripts
+WORKDIR /app/nlp-service
+COPY ./service/scripts/*.sh ./
 
 # entry point
 CMD /bin/bash
-

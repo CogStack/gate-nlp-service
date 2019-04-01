@@ -16,7 +16,7 @@ services:
     volumes:
       # configuration files
       - ./service/config/example-drug:/app/nlp-service/config:ro
-      - ./service/run.sh:/app/nlp-service/run.sh:ro
+      #- ./service/run.sh:/app/nlp-service/run.sh:ro
       # GATE app: example drug app
       - ../resources/gate/drug-app:/gate/app/drug-app:ro
     ports:
@@ -49,7 +49,7 @@ services:
     volumes:
       - ./gateway/config:/app/gateway/config:ro
       - ./gateway/services:/app/gateway/services:ro
-      - ./gateway/run.sh:/app/gateway/run.sh:ro
+      #- ./gateway/run.sh:/app/gateway/run.sh:ro
     depends_on:
       - gate-nlp-drug
       - gate-nlp-bioyodie
