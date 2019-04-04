@@ -1,6 +1,7 @@
 package nlp.service.gate.processor;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -183,7 +184,7 @@ public class GateProcessor {
         // - client app (query)
         Map<String, Set<String>> annSets = null;
         if (availableAnnotationSets != null && availableAnnotationSets.size() > 0)
-            annSets = availableAnnotationSets;
+            annSets = new HashMap<>(availableAnnotationSets);
 
         if (applicationParams != null && applicationParams.containsKey(GateApplicationRuntimeParamKeys.ANNOTATION_SETS)) {
             Map<String, Set<String>> queryAnnSet = GateUtils.getAnnotationTypeSets(applicationParams.get(GateApplicationRuntimeParamKeys.ANNOTATION_SETS));
