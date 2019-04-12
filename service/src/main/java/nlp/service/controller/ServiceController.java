@@ -83,6 +83,13 @@ public class ServiceController {
 
         ServiceResponseContent response = new ServiceResponseContent();
 
+        if (content.getNlpPayload() == null || content.getNlpPayload().isEmpty()) {
+            NlpProcessingResult result = new NlpProcessingResult();
+            result.setError(ProcessingError.builder().message("Empty payload").build());
+            response.setResult(result);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         try {
             NlpProcessingResult result = service.process(content.getNlpPayload(), content.getApplicationParams());
             response.setResult(result);
@@ -93,14 +100,13 @@ public class ServiceController {
 
             NlpProcessingResult result = new NlpProcessingResult();
             result.setError(ProcessingError.builder().message(message).build());
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setResult(result);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         response.setFooter(content.getFooter());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 
     /*
 

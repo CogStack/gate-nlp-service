@@ -68,7 +68,6 @@ public class GateNlpService extends NlpService {
         // - linked attributes
         // - binary document
 
-
         // run GATE processor
         //
         GenericDocument outDoc;

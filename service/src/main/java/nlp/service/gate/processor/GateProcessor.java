@@ -82,6 +82,11 @@ public class GateProcessor {
             log.info("Executing GATE controller: " + gateController.getName());
 
             gateDoc = Factory.newDocument(inDocument.getText());
+
+            // TODO:
+            // set-up the document meta-data,
+            // such as DCT using the runtime params
+
             processDocument(inDocument, runtimeParams, gateController, gateDoc);
         }
         catch (Exception e) {
@@ -166,14 +171,14 @@ public class GateProcessor {
                                  Document outDocument) throws Exception {
 
         Corpus corpus = gateController.getCorpus();
-        corpus.add(outDocument);
+        try {
+            corpus.add(outDocument);
 
-        // TODO:
-        // set-up the document meta-data,
-        // such as DCT using the runtime params
-
-        gateController.execute();
-        corpus.clear();
+            gateController.execute();
+        }
+        finally {
+            corpus.clear();
+        }
     }
 
 

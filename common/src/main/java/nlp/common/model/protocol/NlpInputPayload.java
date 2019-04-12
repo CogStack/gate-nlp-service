@@ -23,4 +23,11 @@ public class NlpInputPayload {
      */
     @JsonProperty("metadata")
     Map<String, Object> metadata;
+
+    /**
+     * Checks whether the payload content is empty
+     */
+    public Boolean isEmpty() {
+        return (text == null || text.length() == 0) && (metadata == null || metadata.size() == 0);
+    }
 }
