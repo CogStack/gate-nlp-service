@@ -90,7 +90,7 @@ public class GateProcessor {
             processDocument(inDocument, runtimeParams, gateController, gateDoc);
         }
         catch (Exception e) {
-            log.error("Error processing NLP query: " + e.getMessage());
+            log.error("Error executing GATE controller on the provided NLP query: " + e.getMessage());
             throw e;
         }
         finally {

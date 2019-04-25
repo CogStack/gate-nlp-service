@@ -84,10 +84,12 @@ public class ServiceController {
         ServiceResponseContent response = new ServiceResponseContent();
 
         if (content.getNlpPayload() == null || content.getNlpPayload().isEmpty()) {
+            final String message = "Empty payload";
             NlpProcessingResult result = new NlpProcessingResult();
-            result.setError(ProcessingError.builder().message("Empty payload").build());
+            result.setError(ProcessingError.builder().message(message).build());
             response.setResult(result);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            log.info(message);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
         try {
@@ -95,7 +97,7 @@ public class ServiceController {
             response.setResult(result);
         }
         catch (Exception e) {
-            String message = "Error processing the query: " + e.getMessage();
+            final String message = "Error processing the query: " + e.getMessage();
             log.error(message);
 
             NlpProcessingResult result = new NlpProcessingResult();

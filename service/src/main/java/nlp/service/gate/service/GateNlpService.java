@@ -49,7 +49,7 @@ public class GateNlpService extends NlpService {
 
 
     @Override
-    public NlpProcessingResult process(NlpInputPayload payload, Map<String, String> applicationParams) {
+    public NlpProcessingResult process(NlpInputPayload payload, Map<String, String> applicationParams) throws Exception {
 
         // parse the payload to GenericDocument handler
         //
@@ -76,9 +76,7 @@ public class GateNlpService extends NlpService {
         } catch (Exception e) {
             String message = "Error processing NLP query: " + e.getMessage();
             log.error(message);
-
-            resultMapper.setError(ProcessingError.builder().message(message).build());
-            return resultMapper.getProcessingResult();
+            throw e;
         }
 
         // prepare the result payload
