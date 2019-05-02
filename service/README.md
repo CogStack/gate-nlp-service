@@ -12,7 +12,7 @@ The application requires a configuration file, which specifies which NLP applica
 
 # API specification
 
-- TODO
+The API specificaiton in [OpenAPI](https://www.openapis.org/) standard is provided in `api-specs` directory - please refer to: [openapi.yaml](./api-specs/openapi.yaml)
 
 
 # Missing
