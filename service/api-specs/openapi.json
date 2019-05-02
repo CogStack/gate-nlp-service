@@ -1,0 +1,209 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "NLP Service REST API",
+    "description": "Description of the initial NLP Service REST API.\nYou can find out more the application at [http://github.com/CogStack/nlp-rest-service](http://github.com/CogStack/nlp-rest-service).\n",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "0.1.0"
+  },
+  "externalDocs": {
+    "description": "Find out more about NLP Service",
+    "url": "http://github.com/CogStack/nlp-rest-service"
+  },
+  "tags": [
+    {
+      "name": "info",
+      "description": "Information about the services"
+    },
+    {
+      "name": "process",
+      "description": "Processing of the data"
+    }
+  ],
+  "paths": {
+    "/info": {
+      "get": {
+        "summary": "Display information about the NLP application",
+        "tags": [
+          "info"
+        ],
+        "operationId": "info",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NlpApplicationInformation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/process": {
+      "post": {
+        "summary": "Process the content",
+        "tags": [
+          "process"
+        ],
+        "operationId": "process",
+        "requestBody": {
+          "description": "The content to process payload",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Empty or invalid payload supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error occured while processing the payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GenericParameters": {
+        "type": "object",
+        "additionalProperties": {}
+      },
+      "GenericMetadata": {
+        "type": "object",
+        "additionalProperties": {}
+      },
+      "NlpInputPayload": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericMetadata"
+          }
+        }
+      },
+      "NlpApplicationInformation": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/GenericParameters"
+          }
+        }
+      },
+      "ServiceResponseContent": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/NlpProcessingResult"
+          },
+          "footer": {
+            "$ref": "#/components/schemas/GenericMetadata"
+          }
+        }
+      },
+      "NlpProcessingResult": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "annotations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericAnnotation"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericMetadata"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessingError"
+            }
+          }
+        }
+      },
+      "ProcessingError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "GenericAnnotation": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object"
+        }
+      },
+      "ServiceRequestContent": {
+        "type": "object",
+        "properties": {
+          "nlpPayload": {
+            "$ref": "#/components/schemas/NlpInputPayload"
+          },
+          "applicationParams": {
+            "$ref": "#/components/schemas/GenericParameters"
+          },
+          "footer": {
+            "$ref": "#/components/schemas/GenericMetadata"
+          }
+        }
+      }
+    }
+  }
+}

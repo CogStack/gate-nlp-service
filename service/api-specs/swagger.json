@@ -1,0 +1,182 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Description of the initial NLP Service REST API. \n You can find out more the application at [http://github.com/CogStack/nlp-rest-service](http://github.com/CogStack/nlp-rest-service).",
+    "version": "0.1.0",
+    "title": "NLP Service REST API",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "basePath": "/api",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/info": {
+      "get": {
+        "summary": "Display information about the NLP application",
+        "description": "",
+        "operationId": "info",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/NlpApplicationInformation"
+            }
+          }
+        }
+      }
+    },
+    "/process": {
+      "post": {
+        "summary": "Process the content",
+        "description": "",
+        "operationId": "process",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The content to process payload",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ServiceRequestContent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ServiceResponseContent"
+            }
+          },
+          "400": {
+            "description": "Empty or invalid payload supplied"
+          },
+          "500": {
+            "description": "Internal error occured while processing the payload"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "GenericMetadata": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "GenericParameters": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "GenericAnnotation": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "ProcessingError": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "NlpApplicationInformation": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "parameters": {
+          "$ref": "#/definitions/GenericParameters"
+        }
+      }
+    },
+    "NlpInputPayload": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/definitions/GenericMetadata"
+        }
+      }
+    },
+    "NlpProcessingResult": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "annotations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GenericAnnotation"
+          }
+        },
+        "metadata": {
+          "$ref": "#/definitions/GenericMetadata"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProcessingError"
+          }
+        }
+      }
+    },
+    "ServiceRequestContent": {
+      "type": "object",
+      "properties": {
+        "nlpPayload": {
+          "$ref": "#/definitions/NlpInputPayload"
+        },
+        "applicationParams": {
+          "$ref": "#/definitions/GenericParameters"
+        },
+        "footer": {
+          "$ref": "#/definitions/GenericMetadata"
+        }
+      }
+    },
+    "ServiceResponseContent": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/NlpProcessingResult"
+        },
+        "footer": {
+          "$ref": "#/definitions/GenericMetadata"
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about NLP Service",
+    "url": "http://github.com/CogStack/nlp-rest-service"
+  }
+}
