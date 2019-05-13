@@ -74,6 +74,16 @@ public class GateProcessor {
 
     public GenericDocument process(GenericDocument inDocument, Map<String, String> runtimeParams) throws Exception {
 
+        // check whether the document is empty
+        //
+        if (inDocument.getText().chars().allMatch(Character::isWhitespace)) {
+            log.info("Provided document contains only whitespace characters");
+
+            GenericDocument outDoc = new GenericDocument();
+            outDoc.setText(inDocument.getText());
+            return outDoc;
+        }
+
         // process the document and extract the annotations
         //
         Document gateDoc;
