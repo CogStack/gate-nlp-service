@@ -19,4 +19,4 @@ cache:
 #  - ./gradlew downloadDependencies > /dev/null
 
 script:
-  - ./travis_gradle_build.sh
+  - bash travis_gradle_build.sh
