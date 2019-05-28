@@ -27,7 +27,9 @@ apply plugin: 'io.spring.dependency-management'
 group 'nlp'
 version '0.0.1-SNAPSHOT'
 
-sourceCompatibility = 1.9
+//sourceCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_1_9
+
 
 
 repositories {
@@ -40,16 +42,35 @@ dependencies {
 
     compile project(':common')
 
+    compileOnly 'org.projectlombok:lombok:1.18.4'
+
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    compileOnly 'org.projectlombok:lombok:1.18.4'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok:1.18.4'
-    
+
     // specific for GATE NLP
     compile('uk.ac.gate:gate-core:8.5')
+
+
+    // tests
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.1.0'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+
+    testRuntime("org.junit.platform:junit-platform-launcher:1.4.2")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.2")
+
+    // old JUnit configuration
+    //testImplementation('junit:junit:4.12')
+    //testRuntime("org.junit.vintage:junit-vintage-engine:5.4.2")
 }
+
+// INFO: uncomment below to run JUnit 5 tests
+//
+//test {
+//    useJUnitPlatform()
+//}

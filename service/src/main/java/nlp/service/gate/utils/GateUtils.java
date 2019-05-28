@@ -151,7 +151,7 @@ public class GateUtils {
     }
 
     /**
-     * Extracts the annotations/type sets rom provided parameter string.
+     * Extracts the annotations/type sets from provided parameter string.
      */
     public static Map<String, Set<String>> getAnnotationTypeSets(String filterByAnnotations) {
 

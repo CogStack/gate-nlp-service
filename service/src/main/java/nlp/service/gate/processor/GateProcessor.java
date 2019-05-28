@@ -54,7 +54,7 @@ public class GateProcessor {
     private Logger log = LoggerFactory.getLogger(GateProcessor.class);
 
 
-    public GateProcessor(GateApplicationParameters params) throws Exception {
+    public GateProcessor(GateApplicationSetupParameters params) throws Exception {
 
         initGateFramework(params);
         log.info("GATE framework initialized");
@@ -120,11 +120,11 @@ public class GateProcessor {
         return outDocument;
     }
 
-    private void initGateFramework(GateApplicationParameters params) throws Exception {
+    private void initGateFramework(GateApplicationSetupParameters params) throws Exception {
         try {
-            String gateHome = params.getGateHome();
-            Gate.setGateHome(new File(gateHome));
-            Gate.init();
+            if (!Gate.isInitialised()) {
+                Gate.init();
+            }
         }
         catch (Exception e) {
             log.error("Error initializing GATE framework: " + e.getMessage());
@@ -133,7 +133,7 @@ public class GateProcessor {
     }
 
 
-    private void initGateResources(GateApplicationParameters params) throws Exception {
+    private void initGateResources(GateApplicationSetupParameters params) throws Exception {
         try {
             controllerPool = new LinkedBlockingQueue<>();
 
@@ -168,7 +168,7 @@ public class GateProcessor {
     }
 
 
-    private void parseAdditionalAppParams(GateApplicationParameters params) {
+    private void parseAdditionalAppParams(GateApplicationSetupParameters params) {
         if (params.getAnnotationSets() != null && params.getAnnotationSets().length() > 0) {
             availableAnnotationSets = GateUtils.getAnnotationTypeSets(params.getAnnotationSets());
         }
