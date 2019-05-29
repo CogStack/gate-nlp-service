@@ -3,11 +3,10 @@ package nlp.service.gate.service;
 import nlp.common.model.document.GenericDocument;
 import nlp.common.model.protocol.NlpInputPayload;
 import nlp.common.model.protocol.NlpProcessingResult;
-import nlp.common.model.protocol.ProcessingError;
 import nlp.service.config.ServiceConfiguration;
 import nlp.service.gate.data.GateNlpContentDataMapper;
 import nlp.service.gate.data.GateNlpResultDataMapper;
-import nlp.service.gate.processor.GateApplicationParameters;
+import nlp.service.gate.processor.GateApplicationSetupParameters;
 import nlp.service.gate.processor.GateProcessor;
 import nlp.service.service.NlpService;
 import org.slf4j.Logger;
@@ -24,7 +23,8 @@ public class GateNlpService extends NlpService {
      * Available configuration parameters for GATE
      */
     private class GateApplicationConfigurationKeys {
-        static final String GATE_HOME = "gateHome";
+        // Starting from GATE 8.5 GATE_HOME is not needed anymore
+        //static final String GATE_HOME = "gateHome";
         static final String GATE_APP_PATH = "gateAppPath";
         static final String GATE_CONTROLLER_NUM = "gateControllerNum";
         static final String ANNOTATION_SETS = "annotationSets";
@@ -42,7 +42,7 @@ public class GateNlpService extends NlpService {
     public GateNlpService(ServiceConfiguration config) throws Exception {
         super(config);
 
-        GateApplicationParameters gateParams = parseAppParams(config);
+        GateApplicationSetupParameters gateParams = parseAppParams(config);
 
         gateProcessor = new GateProcessor(gateParams);
     }
@@ -93,19 +93,9 @@ public class GateNlpService extends NlpService {
     }
 
 
-    private GateApplicationParameters parseAppParams(ServiceConfiguration config) throws Exception {
+    private GateApplicationSetupParameters parseAppParams(ServiceConfiguration config) {
 
-        if (!config.getAppParams().containsKey(GateApplicationConfigurationKeys.GATE_HOME)) {
-            throw new Exception("GATE_HOME not set");
-        }
-
-        if (!config.getAppParams().containsKey(GateApplicationConfigurationKeys.GATE_APP_PATH)) {
-            throw new Exception("GATE_APP_PATH not set");
-        }
-
-        GateApplicationParameters gateParams = new GateApplicationParameters();
-
-        gateParams.setGateHome((String)config.getAppParams().get(GateApplicationConfigurationKeys.GATE_HOME));
+        GateApplicationSetupParameters gateParams = new GateApplicationSetupParameters();
         gateParams.setGateAppPath((String)config.getAppParams().get(GateApplicationConfigurationKeys.GATE_APP_PATH));
 
         if (config.getAppParams().containsKey(GateApplicationConfigurationKeys.GATE_CONTROLLER_NUM)) {
