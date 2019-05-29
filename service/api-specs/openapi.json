@@ -116,6 +116,9 @@
           },
           "metadata": {
             "$ref": "#/components/schemas/GenericMetadata"
+          },
+          "footer": {
+            "$ref": "#/components/schemas/GenericMetadata"
           }
         }
       },
@@ -141,9 +144,6 @@
         "properties": {
           "result": {
             "$ref": "#/components/schemas/NlpProcessingResult"
-          },
-          "footer": {
-            "$ref": "#/components/schemas/GenericMetadata"
           }
         }
       },
@@ -170,6 +170,9 @@
             "items": {
               "$ref": "#/components/schemas/ProcessingError"
             }
+          },
+          "footer": {
+            "$ref": "#/components/schemas/GenericMetadata"
           }
         }
       },
@@ -193,14 +196,11 @@
       "ServiceRequestContent": {
         "type": "object",
         "properties": {
-          "nlpPayload": {
+          "content": {
             "$ref": "#/components/schemas/NlpInputPayload"
           },
           "applicationParams": {
             "$ref": "#/components/schemas/GenericParameters"
-          },
-          "footer": {
-            "$ref": "#/components/schemas/GenericMetadata"
           }
         }
       }

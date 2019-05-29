@@ -11,6 +11,9 @@ import nlp.service.gate.processor.GateProcessor;
 import nlp.service.service.NlpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -48,6 +51,9 @@ public class GateNlpService extends NlpService {
     }
 
 
+    /**
+     * Process a single request.
+     */
     @Override
     public NlpProcessingResult process(NlpInputPayload payload, Map<String, String> applicationParams) throws Exception {
 
@@ -72,7 +78,7 @@ public class GateNlpService extends NlpService {
         //
         GenericDocument outDoc;
         try {
-            outDoc = gateProcessor.process(doc, applicationParams);
+            outDoc = gateProcessor.processDocument(doc, applicationParams);
         } catch (Exception e) {
             String message = "Error processing NLP query: " + e.getMessage();
             log.error(message);
@@ -90,6 +96,65 @@ public class GateNlpService extends NlpService {
         // - enable/disable text inclusion
 
         return resultMapper.getProcessingResult();
+    }
+
+
+    /**
+     * Process a bulk request.
+     */
+    @Override
+    public List<NlpProcessingResult> processBulk(List<NlpInputPayload> payloads,
+                                                 Map<String, String> applicationParams) throws Exception {
+
+        // parse the payload to GenericDocument handler
+        //
+        List<GenericDocument> inputDocuments = new ArrayList<>();
+        for (NlpInputPayload singlePayload : payloads) {
+            GateNlpContentDataMapper contentMapper = new GateNlpContentDataMapper(singlePayload);
+
+            GenericDocument doc = new GenericDocument();
+            doc.setText(contentMapper.getText());
+
+            if (contentMapper.getAnnotations().size() > 0) {
+                doc.setAnnotations(contentMapper.getAnnotations());
+            }
+
+            // TODO: handle (if required):
+            // - document-level features
+            // - linked attributes
+            // - binary document
+
+            inputDocuments.add(doc);
+        }
+
+        // run GATE processor
+        //
+        List<GenericDocument> outDocs;
+        try {
+            outDocs = gateProcessor.processDocumentsBulk(inputDocuments, applicationParams);
+        } catch (Exception e) {
+            String message = "Error processing NLP query: " + e.getMessage();
+            log.error(message);
+            throw e;
+        }
+
+        // prepare the result payload
+        //
+        List<NlpProcessingResult> results = new ArrayList<>();
+        for (GenericDocument doc : outDocs) {
+            GateNlpResultDataMapper resultMapper = new GateNlpResultDataMapper();
+            resultMapper.setText(doc.getText());
+            resultMapper.setAnnotations(doc.getAnnotations());
+            resultMapper.setDocumentFeatures(doc.getDocumentFeatures());
+
+            // TODO: set in payload (if required):
+            // - binary document
+            // - enable/disable text inclusion
+
+            results.add(resultMapper.getProcessingResult());
+        }
+
+        return results;
     }
 
 

@@ -104,6 +104,8 @@ definitions:
         type: "string"
       metadata:
         $ref: '#/definitions/GenericMetadata'
+      footer:
+        $ref: '#/definitions/GenericMetadata'
         
   NlpProcessingResult:
     type: "object"
@@ -122,24 +124,22 @@ definitions:
         type: "array"
         items:
           $ref: '#/definitions/ProcessingError'
+      footer:
+        $ref: '#/definitions/GenericMetadata'
           
   ServiceRequestContent:
     type: "object"
     properties:
-      nlpPayload:
+      content:
         $ref: '#/definitions/NlpInputPayload'
       applicationParams:
         $ref: '#/definitions/GenericParameters'
-      footer:
-        $ref: '#/definitions/GenericMetadata'
       
   ServiceResponseContent:
     type: "object"
     properties:
       result:
         $ref: '#/definitions/NlpProcessingResult'
-      footer:
-        $ref: '#/definitions/GenericMetadata'
 
 # ----------------------------------------------------------------          
 #

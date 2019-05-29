@@ -104,6 +104,8 @@ components:
           type: string
         metadata:
           $ref: '#/components/schemas/GenericMetadata'
+        footer:
+          $ref: '#/components/schemas/GenericMetadata'
           
     NlpApplicationInformation:
       type: object
@@ -122,8 +124,6 @@ components:
       properties:
         result:
           $ref: '#/components/schemas/NlpProcessingResult'
-        footer:
-          $ref: '#/components/schemas/GenericMetadata'
           
     NlpProcessingResult:
       type: object
@@ -142,6 +142,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProcessingError'
+        footer:
+          $ref: '#/components/schemas/GenericMetadata'
             
     ProcessingError:
       type: object
@@ -150,16 +152,16 @@ components:
           type: string
         description:
           type: string
+
     GenericAnnotation:
       type: object
       additionalProperties:
         type: object
+
     ServiceRequestContent:
       type: object
       properties:
-        nlpPayload:
+        content:
           $ref: '#/components/schemas/NlpInputPayload'
         applicationParams:
           $ref: '#/components/schemas/GenericParameters'
-        footer:
-          $ref: '#/components/schemas/GenericMetadata'

@@ -26,7 +26,7 @@ public class GenericDocument {
     /**
      * Document-level features, as e.g. used in GATE.
      */
-    List<GenericAnnotation> documentFeatures = new ArrayList<>();
+    GenericAnnotation documentFeatures = new GenericAnnotation();
 
     /**
      * The document content in NLP application-specific binary format.

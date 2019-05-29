@@ -1,10 +1,7 @@
 package nlp.service.gate.processor;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
@@ -15,9 +12,9 @@ import gate.Factory;
 import gate.Gate;
 import gate.Document;
 import gate.util.persistence.PersistenceManager;
+import nlp.common.model.annotation.GenericAnnotation;
 import nlp.common.model.document.GenericDocument;
 import nlp.service.gate.utils.GateUtils;
-import nlp.service.gate.annotation.model.AtomicGateAnnotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,13 +69,16 @@ public class GateProcessor {
     }
 
 
-    public GenericDocument process(GenericDocument inDocument, Map<String, String> runtimeParams) throws Exception {
+    /**
+     * Processes provided single Generic Document and extract all the annotations (w. document-level features).
+     */
+    public GenericDocument processDocument(GenericDocument inDocument,
+                                           Map<String, String> runtimeParams) throws Exception {
 
         // check whether the document is empty
         //
-        if (inDocument.getText().chars().allMatch(Character::isWhitespace)) {
+        if (GateUtils.isBlank(inDocument.getText())) {
             log.info("Provided document contains only whitespace characters");
-
             GenericDocument outDoc = new GenericDocument();
             outDoc.setText(inDocument.getText());
             return outDoc;
@@ -88,16 +88,16 @@ public class GateProcessor {
         //
         Document gateDoc;
         CorpusController gateController = controllerPool.take();
+
         try {
             log.info("Executing GATE controller: " + gateController.getName());
-
-            gateDoc = Factory.newDocument(inDocument.getText());
 
             // TODO:
             // set-up the document meta-data,
             // such as DCT using the runtime params
+            gateDoc = Factory.newDocument(inDocument.getText());
 
-            processDocument(inDocument, runtimeParams, gateController, gateDoc);
+            processGateDocument(inDocument, runtimeParams, gateController, gateDoc);
         }
         catch (Exception e) {
             log.error("Error executing GATE controller on the provided NLP query: " + e.getMessage());
@@ -109,8 +109,7 @@ public class GateProcessor {
 
         // extract the annotations and prepare the output document
         //
-        List<AtomicGateAnnotation> anns = extractAnnotations(gateDoc, runtimeParams);
-        GenericDocument outDocument = prepareOutputDocument(gateDoc, anns, runtimeParams);
+        GenericDocument outDocument = prepareOutputDocument(gateDoc, runtimeParams);
 
 
         // cleanup
@@ -120,6 +119,105 @@ public class GateProcessor {
         return outDocument;
     }
 
+
+    /**
+     * Processes provided documents in bulk and extract all the annotations (w. document-level features).
+     */
+    public List<GenericDocument> processDocumentsBulk(List<GenericDocument> inDocuments,
+                                                      Map<String, String> runtimeParams) throws Exception {
+
+        // we will be using only 1 GATE controller so we can assign the processed
+        // annotations at specified indices
+        //
+        List<GenericDocument> outDocuments = new ArrayList<>(Collections.nCopies(inDocuments.size(), null));
+        List<Document> gateDocuments = new ArrayList<>(Collections.nCopies(inDocuments.size(), null));
+
+        // prepare GATE documents for processing
+        //
+        try {
+            for (int i = 0; i < inDocuments.size(); ++i) {
+
+                GenericDocument doc = inDocuments.get(i);
+
+                // check whether the text is blank -- do not add such documents as GATE controller won't handle these
+                //
+                if (GateUtils.isBlank(doc.getText())) {
+                    log.info("Provided document (idx: " + i + ") contains only whitespace characters");
+                    gateDocuments.set(i, null);
+                }
+                else {
+                    // TODO:
+                    // set-up the document meta-data,
+                    // such as DCT using the runtime params
+                    gateDocuments.set(i, Factory.newDocument(doc.getText()));
+                }
+            }
+        }
+        catch (Exception e) {
+            log.error("Error creating GATE documents for processing: " + e.getMessage());
+            throw e;
+        }
+        finally {
+            // cleanup the documents
+            for (Document doc : gateDocuments) {
+                if (doc != null) {
+                    Factory.deleteResource(doc);
+                }
+            }
+        }
+
+        // run the GATE controller
+        //
+        CorpusController gateController = controllerPool.take();
+        Corpus corpus = gateController.getCorpus();
+        try
+        {
+            for (Document doc : gateDocuments) {
+                if (doc != null) {
+                    corpus.add(doc);
+                }
+            }
+
+            log.info("Executing GATE controller: " + gateController.getName());
+            gateController.execute();
+        }
+        catch (Exception e) {
+            log.error("Error executing GATE controller on the provided bulk query: " + e.getMessage());
+            throw e;
+        }
+        finally {
+            corpus.clear();
+            controllerPool.add(gateController);
+        }
+
+        // get the annotations
+        //
+        for (int i = 0; i < gateDocuments.size(); ++i) {
+            Document doc = gateDocuments.get(i);
+
+            if (doc == null) {
+                outDocuments.set(i, new GenericDocument());
+            } else {
+                GenericDocument outDoc = prepareOutputDocument(doc, runtimeParams);
+                outDocuments.set(i, outDoc);
+            }
+        }
+
+        // cleanup
+        //
+        for (Document doc : gateDocuments) {
+            if (doc != null) {
+                Factory.deleteResource(doc);
+            }
+        }
+
+        return outDocuments;
+    }
+
+
+    /**
+     * Initializes GATE framework according to the specified configuration.
+     */
     private void initGateFramework(GateApplicationSetupParameters params) throws Exception {
         try {
             if (!Gate.isInitialised()) {
@@ -133,6 +231,9 @@ public class GateProcessor {
     }
 
 
+    /**
+     * Initializes internal GATE resources according to the specified configuration.
+     */
     private void initGateResources(GateApplicationSetupParameters params) throws Exception {
         try {
             controllerPool = new LinkedBlockingQueue<>();
@@ -168,6 +269,9 @@ public class GateProcessor {
     }
 
 
+    /**
+     * Parses additional parameters provided as key-values in the configuration.
+     */
     private void parseAdditionalAppParams(GateApplicationSetupParameters params) {
         if (params.getAnnotationSets() != null && params.getAnnotationSets().length() > 0) {
             availableAnnotationSets = GateUtils.getAnnotationTypeSets(params.getAnnotationSets());
@@ -175,15 +279,29 @@ public class GateProcessor {
     }
 
 
-    private void processDocument(GenericDocument inDocument,
-                                 Map<String, String> runtimeParams,
-                                 CorpusController gateController,
-                                 Document outDocument) throws Exception {
+    /**
+     * Process a single document.
+     */
+    private void processGateDocument(GenericDocument inDocument,
+                                     Map<String, String> runtimeParams,
+                                     CorpusController gateController,
+                                     Document outDocument) throws Exception {
+
+        // TODO: use annotations from the input documents
+        // TODO: use the runtime parameters during the processing
+        runGateController(gateController, List.of(outDocument));
+    }
+
+
+    /**
+     * Run a GateController over a list of GATE documents.
+     */
+    private void runGateController(CorpusController gateController,
+                                   List<Document> documents) throws Exception {
 
         Corpus corpus = gateController.getCorpus();
         try {
-            corpus.add(outDocument);
-
+            corpus.addAll(documents);
             gateController.execute();
         }
         finally {
@@ -192,7 +310,10 @@ public class GateProcessor {
     }
 
 
-    private List<AtomicGateAnnotation> extractAnnotations(Document gateDoc, Map<String, String> applicationParams) {
+    /**
+     * Extracts annotations from processed GATE document.
+     */
+    private List<GenericAnnotation> extractAnnotations(Document gateDoc, Map<String, String> applicationParams) {
 
         // perform filtering of annotations when provided by either:
         // - configuration file (init)
@@ -210,7 +331,7 @@ public class GateProcessor {
         }
 
         // select appropriate annotations set
-        List<AtomicGateAnnotation> anns;
+        List<GenericAnnotation> anns;
         if (annSets != null)
             anns = GateUtils.getAtomicAnnotations(gateDoc, annSets);
         else
@@ -223,17 +344,37 @@ public class GateProcessor {
     }
 
 
-    private GenericDocument prepareOutputDocument(Document gateDoc,
-                                            List<AtomicGateAnnotation> anns,
-                                            Map<String, String> applicationParams) {
-        GenericDocument outDoc = new GenericDocument();
+    /**
+     * Extracts document-level features from processed GATE document.
+     */
+    private GenericAnnotation extractFeatures(Document gateDoc, Map<String, String> applicationParams) {
+        if (gateDoc.getFeatures() == null)
+            return null;
 
-        outDoc.setText(GateUtils.getDocumentText(gateDoc));
-        outDoc.setAnnotations(anns);
+        GenericAnnotation features = new GenericAnnotation();
+        gateDoc.getFeatures().forEach((name, val) -> features.setAttribute(name.toString(), val));
+        return features;
+    }
+
+
+    /**
+     * Prepares the output Generic Document.
+     */
+    private GenericDocument prepareOutputDocument(Document gateDoc, Map<String, String> runtimeParams) {
+        GenericDocument outDoc = new GenericDocument();
 
         // TODO:
         // parse the applicationParams to decide whether
         // to include text and/or additional properties
+
+        List<GenericAnnotation> anns = extractAnnotations(gateDoc, runtimeParams);
+        GenericAnnotation feats = extractFeatures(gateDoc, runtimeParams);
+
+        outDoc.setText(GateUtils.getDocumentText(gateDoc));
+        outDoc.setAnnotations(anns);
+        if (feats != null && feats.getAttributes().size() > 0) {
+            outDoc.setDocumentFeatures(feats);
+        }
 
         return outDoc;
     }

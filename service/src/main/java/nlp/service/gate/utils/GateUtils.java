@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Arrays;
+
+import nlp.common.model.annotation.GenericAnnotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import nlp.service.gate.annotation.model.AtomicGateAnnotation;
-import nlp.common.model.annotation.TextAnnotation;
 import gate.Document;
 import gate.AnnotationSet;
 import gate.Annotation;
@@ -34,8 +34,8 @@ public class GateUtils {
     /**
      * Extracts ALL annotations from the GATE document.
      */
-    public static List<AtomicGateAnnotation> getAtomicAnnotations(Document gateDoc) {
-        List<AtomicGateAnnotation> atomicAnns = new ArrayList<>();
+    public static List<GenericAnnotation> getAtomicAnnotations(Document gateDoc) {
+        List<GenericAnnotation> atomicAnns = new ArrayList<>();
 
         // get the default annotation set -- all if filters are not specified
         AnnotationSet defaultSet = gateDoc.getAnnotations(GATE_DEFAULT_ANNOTATION_SET_NAME);
@@ -52,9 +52,9 @@ public class GateUtils {
     /**
      * Extracts annotations from the GATE document according to specified annotation sets.
      */
-    public static List<AtomicGateAnnotation> getAtomicAnnotations(Document gateDoc,
-                                                                  Map<String, Set<String>> annotationTypesSets) {
-        List<AtomicGateAnnotation> atomicAnns = new ArrayList<>();
+    public static List<GenericAnnotation> getAtomicAnnotations(Document gateDoc,
+                                                               Map<String, Set<String>> annotationTypesSets) {
+        List<GenericAnnotation> atomicAnns = new ArrayList<>();
 
         // get all types without the ann set names: *:type
         //
@@ -105,42 +105,37 @@ public class GateUtils {
     /**
      * Refines the annotations to include the text they refer to.
      */
-    public static void refineAtomicAnnotations(List<AtomicGateAnnotation> atomicAnnotations, Document gateDoc) {
-        for (TextAnnotation ann : atomicAnnotations) {
-            ann.setText(gate.Utils.stringFor(gateDoc, ann.getStartIdx(), ann.getEndIdx()));
+    public static void refineAtomicAnnotations(List<GenericAnnotation> atomicAnnotations, Document gateDoc) {
+        for (GenericAnnotation ann : atomicAnnotations) {
+            if (ann.getAttributes().containsKey("start_idx") && ann.getAttributes().containsKey("end_idx")) {
+                Long startIdx = (Long)ann.getAttributes().get("start_idx");
+                Long endIdx = (Long)ann.getAttributes().get("end_idx");
+                String text = gate.Utils.stringFor(gateDoc, startIdx, endIdx);
+                ann.setAttribute("text", text);
+            }
         }
     }
 
     /**
      * Converts from GATE annotation type.
      */
-    private static AtomicGateAnnotation toAtomicAnnotation(Annotation gateAnnotation, String setName) {
-        AtomicGateAnnotation atomicAnn = new AtomicGateAnnotation();
-
-        // mandatory
-        //atomicAnn.setId(gateAnnotation.getId().toString());
-        atomicAnn.setType(gateAnnotation.getType());
-
-        atomicAnn.setStartIdx(gateAnnotation.getStartNode().getOffset());
-        atomicAnn.setEndIdx(gateAnnotation.getEndNode().getOffset());
-
-        // optional
-        //atomicAnn.setSet(setName);
-
-        //atomicAnn.setStartNodeId(gateAnnotation.getStartNode().getId().toString());
-        //atomicAnn.setEndNodeId(gateAnnotation.getEndNode().getId().toString());
-        // ...
+    private static GenericAnnotation toAtomicAnnotation(Annotation gateAnnotation, String setName) {
+        GenericAnnotation atomicAnn = new GenericAnnotation();
 
         // TODO:
         // implement it as a converter that will take care of deciding which fields to include
         // (some may be desirable to be skipped)
+
+        // mandatory
+        atomicAnn.setAttribute("type", gateAnnotation.getType());
+        atomicAnn.setAttribute("start_idx", gateAnnotation.getStartNode().getOffset());
+        atomicAnn.setAttribute("end_idx", gateAnnotation.getEndNode().getOffset());
 
         // attributes / features
         atomicAnn.setAttribute("set", setName);
         atomicAnn.setAttribute("id", gateAnnotation.getId());
         atomicAnn.setAttribute("start_node_id", gateAnnotation.getStartNode().getId().toString());
         atomicAnn.setAttribute("end_node_id", gateAnnotation.getEndNode().getId().toString());
-
 
         // gate features
         FeatureMap features = gateAnnotation.getFeatures();
@@ -244,5 +239,12 @@ public class GateUtils {
      */
     public static String getDocumentText(Document gateDoc) {
         return gate.Utils.stringFor(gateDoc, 0L, gate.Utils.lengthLong(gateDoc));
+    }
+
+    /**
+     * Checks whether the string is blank.
+     */
+    public static Boolean isBlank(String text) {
+        return text.chars().allMatch(Character::isWhitespace);
     }
 }
