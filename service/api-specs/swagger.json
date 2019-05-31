@@ -13,12 +13,33 @@
   "schemes": [
     "http"
   ],
+  "tags": [
+    {
+      "name": "info",
+      "description": "Informative only"
+    },
+    {
+      "name": "process",
+      "description": "Processing the documents"
+    },
+    {
+      "name": "single-doc",
+      "description": "Processing a single document at once"
+    },
+    {
+      "name": "bulk-docs",
+      "description": "Processing multiple documents in bulk"
+    }
+  ],
   "paths": {
     "/info": {
       "get": {
         "summary": "Display information about the NLP application",
         "description": "",
         "operationId": "info",
+        "tags": [
+          "info"
+        ],
         "produces": [
           "application/json"
         ],
@@ -34,9 +55,13 @@
     },
     "/process": {
       "post": {
-        "summary": "Process the content",
+        "summary": "Process the content -- single document at once",
         "description": "",
         "operationId": "process",
+        "tags": [
+          "process",
+          "single-doc"
+        ],
         "consumes": [
           "application/json"
         ],
@@ -47,7 +72,7 @@
           {
             "in": "body",
             "name": "body",
-            "description": "The content to process payload",
+            "description": "The content of the document to process",
             "required": true,
             "schema": {
               "$ref": "#/definitions/ServiceRequestContent"
@@ -62,7 +87,55 @@
             }
           },
           "400": {
-            "description": "Empty or invalid payload supplied"
+            "description": "Empty or invalid payload supplied",
+            "schema": {
+              "$ref": "#/definitions/ServiceResponseContent"
+            }
+          },
+          "500": {
+            "description": "Internal error occured while processing the payload"
+          }
+        }
+      }
+    },
+    "/process_bulk": {
+      "post": {
+        "summary": "Process the content -- documents in bulk",
+        "description": "",
+        "operationId": "process_bulk",
+        "tags": [
+          "process",
+          "bulk-docs"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The content to documents to process",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ServiceRequestContentBulk"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ServiceResponseContentBulk"
+            }
+          },
+          "400": {
+            "description": "Empty or invalid payload supplied",
+            "schema": {
+              "$ref": "#/definitions/ServiceResponseContentBulk"
+            }
           },
           "500": {
             "description": "Internal error occured while processing the payload"
@@ -171,6 +244,31 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/NlpProcessingResult"
+        }
+      }
+    },
+    "ServiceRequestContentBulk": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NlpInputPayload"
+          }
+        },
+        "applicationParams": {
+          "$ref": "#/definitions/GenericParameters"
+        }
+      }
+    },
+    "ServiceResponseContentBulk": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NlpProcessingResult"
+          }
         }
       }
     }

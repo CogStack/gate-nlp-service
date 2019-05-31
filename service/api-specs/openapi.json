@@ -1,8 +1,8 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.0.1",
   "info": {
     "title": "NLP Service REST API",
-    "description": "Description of the initial NLP Service REST API.\nYou can find out more the application at [http://github.com/CogStack/nlp-rest-service](http://github.com/CogStack/nlp-rest-service).\n",
+    "description": "Description of the initial NLP Service REST API. \n You can find out more the application at [http://github.com/CogStack/nlp-rest-service](http://github.com/CogStack/nlp-rest-service).",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -13,23 +13,36 @@
     "description": "Find out more about NLP Service",
     "url": "http://github.com/CogStack/nlp-rest-service"
   },
+  "servers": [
+    {
+      "url": "///api"
+    }
+  ],
   "tags": [
     {
       "name": "info",
-      "description": "Information about the services"
+      "description": "Informative only"
     },
     {
       "name": "process",
-      "description": "Processing of the data"
+      "description": "Processing the documents"
+    },
+    {
+      "name": "single-doc",
+      "description": "Processing a single document at once"
+    },
+    {
+      "name": "bulk-docs",
+      "description": "Processing multiple documents in bulk"
     }
   ],
   "paths": {
     "/info": {
       "get": {
-        "summary": "Display information about the NLP application",
         "tags": [
           "info"
         ],
+        "summary": "Display information about the NLP application",
         "operationId": "info",
         "responses": {
           "200": {
@@ -47,13 +60,14 @@
     },
     "/process": {
       "post": {
-        "summary": "Process the content",
         "tags": [
-          "process"
+          "process",
+          "single-doc"
         ],
+        "summary": "Process the content -- single document at once",
         "operationId": "process",
         "requestBody": {
-          "description": "The content to process payload",
+          "description": "The content of the document to process",
           "content": {
             "application/json": {
               "schema": {
@@ -86,13 +100,54 @@
           },
           "500": {
             "description": "Internal error occured while processing the payload",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/process_bulk": {
+      "post": {
+        "tags": [
+          "process",
+          "bulk-docs"
+        ],
+        "summary": "Process the content -- documents in bulk",
+        "operationId": "process_bulk",
+        "requestBody": {
+          "description": "The content to documents to process",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceRequestContentBulk"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceResponseContent"
+                  "$ref": "#/components/schemas/ServiceResponseContentBulk"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Empty or invalid payload supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceResponseContentBulk"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error occured while processing the payload",
+            "content": {}
           }
         }
       }
@@ -102,11 +157,29 @@
     "schemas": {
       "GenericParameters": {
         "type": "object",
-        "additionalProperties": {}
+        "additionalProperties": {
+          "type": "object"
+        }
+      },
+      "ServiceRequestContentBulk": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NlpInputPayload"
+            }
+          },
+          "applicationParams": {
+            "$ref": "#/components/schemas/GenericParameters"
+          }
+        }
       },
       "GenericMetadata": {
         "type": "object",
-        "additionalProperties": {}
+        "additionalProperties": {
+          "type": "object"
+        }
       },
       "NlpInputPayload": {
         "type": "object",
@@ -144,6 +217,17 @@
         "properties": {
           "result": {
             "$ref": "#/components/schemas/NlpProcessingResult"
+          }
+        }
+      },
+      "ServiceResponseContentBulk": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NlpProcessingResult"
+            }
           }
         }
       },
