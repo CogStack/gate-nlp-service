@@ -34,7 +34,3 @@ An example configuration file is provided in `src/main/resources/application.pro
 # API specification
 
 The API specificaiton in [OpenAPI](https://www.openapis.org/) standard is provided in `api-specs` directory - please refer to: [openapi.yaml](./api-specs/openapi.yaml)
-
-
-# Missing
-- tests
