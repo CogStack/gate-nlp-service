@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "NLP Service REST API",
-    "description": "Description of the initial NLP Service REST API. \n You can find out more the application at [http://github.com/CogStack/nlp-rest-service](http://github.com/CogStack/nlp-rest-service).",
+    "description": "Description of the initial NLP Service REST API. \n You can find out more about the application at [http://github.com/CogStack/nlp-rest-service](http://github.com/CogStack/nlp-rest-service)."
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
