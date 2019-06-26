@@ -2,7 +2,6 @@ package nlp.common.model.protocol;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,12 @@ public class NlpProcessingResult {
      */
     @JsonProperty("errors")
     List<ProcessingError> errors;
+
+    /**
+     * Auxiliary data provided by the client application that will be returned back.
+     */
+    @JsonProperty("footer")
+    Map<String, Object> footer;
 
     /**
      * Helper function for setting errors

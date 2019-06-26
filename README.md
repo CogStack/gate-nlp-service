@@ -30,7 +30,3 @@ The detailed instructions on building individual applications are provided in th
 # Usage
 
 For the moment, for the ease of use, please use the individual NLP service wrapper as a standalone service. The detailed instructions on it's use are available in `service` directory.
-
-
-# Missing
-- tests

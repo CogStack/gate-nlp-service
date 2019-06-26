@@ -1,9 +1,6 @@
 package nlp.service.controller;
 
-import nlp.common.model.protocol.NlpProcessingResult;
-import nlp.common.model.protocol.ProcessingError;
-import nlp.common.model.protocol.ServiceRequestContent;
-import nlp.common.model.protocol.ServiceResponseContent;
+import nlp.common.model.protocol.*;
 import nlp.service.config.ApplicationConfiguration;
 import nlp.service.config.ServiceConfiguration;
 import nlp.service.service.NlpService;
@@ -14,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.List;
 
 
 /**
@@ -76,26 +74,32 @@ public class ServiceController {
 
 
     /**
-     * Processes the content.
+     * Processes the content - a single document at once.
      */
     @PostMapping(value = apiFullPath + "/process")
-    public ResponseEntity<ServiceResponseContent> process(@RequestBody /*@Valid*/ ServiceRequestContent content) {
+    public ResponseEntity<ServiceSingleResponseContent> process(@RequestBody /*@Valid*/ ServiceSingleRequestContent content) {
 
-        ServiceResponseContent response = new ServiceResponseContent();
+        ServiceSingleResponseContent response = new ServiceSingleResponseContent();
 
-        if (content.getNlpPayload() == null || content.getNlpPayload().isEmpty()) {
+        // check whether we need to perform any processing
+        //
+        if (content.getContent() == null || content.getContent().isEmpty()) {
+            final String message = "Empty content";
             NlpProcessingResult result = new NlpProcessingResult();
-            result.setError(ProcessingError.builder().message("Empty payload").build());
+            result.setError(ProcessingError.builder().message(message).build());
             response.setResult(result);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            log.info(message);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
+        // process the content
+        //
         try {
-            NlpProcessingResult result = service.process(content.getNlpPayload(), content.getApplicationParams());
+            NlpProcessingResult result = service.process(content.getContent(), content.getApplicationParams());
             response.setResult(result);
         }
         catch (Exception e) {
-            String message = "Error processing the query: " + e.getMessage();
+            final String message = "Error processing the query: " + e.getMessage();
             log.error(message);
 
             NlpProcessingResult result = new NlpProcessingResult();
@@ -104,43 +108,56 @@ public class ServiceController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        response.setFooter(content.getFooter());
+        // set the original footer to return it back to the client
+        //
+        response.getResult().setFooter(content.getContent().getFooter());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /*
 
-    TODO: move to tests
+    /**
+     * Processes the content - documents in bulk.
+     */
+    @PostMapping(value = apiFullPath + "/process_bulk")
+    public ResponseEntity<ServiceBulkResponseContent> processBulk(@RequestBody /*@Valid*/ ServiceBulkRequestContent content) {
 
-    @GetMapping(value = apiPathPrefix + "/test")
-    public ResponseEntity<ServiceResponseContent> test() {
+        ServiceBulkResponseContent response = new ServiceBulkResponseContent();
 
-        final String text = "Pt is 40yo mother, software engineer HPI : Sleeping trouble on present " +
-                "dosage of Clonidine. Severe Rash  on face and leg, slightly itchy  Meds : Vyvanse " +
-                "50 mgs po at breakfast daily, Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs HEENT : " +
-                "Boggy inferior turbinates, No oropharyngeal lesion Lungs : clear Heart : Regular rhythm " +
-                "Skin :  Papular mild erythematous eruption to hairline Follow-up as scheduled";
-
-        //String text = "Theresa May suffered a second defeat in two days as Parliament asserted its authority " +
-        //        "over Brexit. MPs voted by 308 votes to 297 – a majority of 11 – on an amendment to force the " +
-        //        "Prime Minister to return to the House and make a statement about a “plan B”  " +
-        //        "within three days if she loses.";
-
-        // process the nlp
+        // check whether we need to perform any processing
         //
-        ServiceRequestContent content = new ServiceRequestContent();
-        //content.setDocumentContent(text);
+        if (content.getContent() == null || content.getContent().isEmpty()) {
+            final String message = "Empty content";
+            NlpProcessingResult result = new NlpProcessingResult();
+            result.setError(ProcessingError.builder().message(message).build());
+            response.setResult(List.of(result));
+            log.info(message);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
 
-        ServiceResponseContent nlpResult;
+        // process the content
+        //
         try {
-            nlpResult = service.process(content, Collections.emptyMap());
+            List<NlpProcessingResult> result = service.processBulk(content.getContent(), content.getApplicationParams());
+            response.setResult(result);
         }
         catch (Exception e) {
-            log.error("Error processing the query: " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            final String message = "Error processing the query: " + e.getMessage();
+            log.error(message);
+
+            NlpProcessingResult result = new NlpProcessingResult();
+            result.setError(ProcessingError.builder().message(message).build());
+            response.setResult(List.of(result));
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>(nlpResult, HttpStatus.OK);
+        // set the original footer to return it back to the client
+        //
+        assert response.getResult().size() == content.getContent().size();
+        for (int i = 0; i < response.getResult().size(); ++i) {
+            NlpProcessingResult res = response.getResult().get(i);
+            NlpInputPayload ctx = content.getContent().get(i);
+            res.setFooter(ctx.getFooter());
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    */
 }

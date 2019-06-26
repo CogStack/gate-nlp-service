@@ -1,0 +1,12 @@
+Release 0.2.0 -- 14 Jun 2019
+---------------
+* Added processing documents in bulk mode (endpoint: /procees_bulk)
+* Added OpenAPI+Swagger specs
+* Added tests
+* Integration with TravisCI (builds + tests)
+* Minor bugfixes
+
+
+Release 0.1.0 -- 12 Apr 2019
+---------------
+* Initial public release

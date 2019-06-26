@@ -2,8 +2,8 @@ package nlp.gateway.controller;
 
 import nlp.gateway.config.ServiceDefinition;
 import nlp.gateway.config.GatewayConfig;
-import nlp.common.model.protocol.ServiceRequestContent;
-import nlp.common.model.protocol.ServiceResponseContent;
+import nlp.common.model.protocol.ServiceSingleRequestContent;
+import nlp.common.model.protocol.ServiceSingleResponseContent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -106,8 +106,8 @@ public class GatewayController {
      * Endpoint for query the NLP application to process the content.
      */
     @RequestMapping(value = apiFullPath + "/{applicationName}/process", method=RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<ServiceResponseContent> process(@PathVariable String applicationName,
-                                                          @RequestBody /*@Valid*/ ServiceRequestContent content) {
+    public ResponseEntity<ServiceSingleResponseContent> process(@PathVariable String applicationName,
+                                                                @RequestBody /*@Valid*/ ServiceSingleRequestContent content) {
         // check whether the application exists
         //
         log.info("Accessing /process endpoint for '" + applicationName + "' using HTTP POST");
@@ -119,7 +119,7 @@ public class GatewayController {
 
         // process the nlp by sending the request to external service
         //
-        ServiceResponseContent response;
+        ServiceSingleResponseContent response;
         try {
             response = this.queryServiceForProcessing(applicationName, "/process", content);
         }
@@ -152,15 +152,15 @@ public class GatewayController {
     /**
      * A helper method to query the NLP service to process the content
      */
-    private ServiceResponseContent queryServiceForProcessing(String applicationName,
-                                                     String endpointPath,
-                                                     ServiceRequestContent content) throws RuntimeException {
+    private ServiceSingleResponseContent queryServiceForProcessing(String applicationName,
+                                                                   String endpointPath,
+                                                                   ServiceSingleRequestContent content) throws RuntimeException {
         ServiceDefinition app = servicesDefinition.get(applicationName);
 
         String appUrl = app.getEndpoint() + endpointPath;
-        ResponseEntity<ServiceResponseContent> responseEntity = restTemplate.exchange(appUrl, HttpMethod.POST,
+        ResponseEntity<ServiceSingleResponseContent> responseEntity = restTemplate.exchange(appUrl, HttpMethod.POST,
                 new HttpEntity<>(content),
-                new ParameterizedTypeReference<ServiceResponseContent>() {
+                new ParameterizedTypeReference<ServiceSingleResponseContent>() {
                 });
         return responseEntity.getBody();
     }

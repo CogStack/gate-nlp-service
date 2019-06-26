@@ -25,6 +25,12 @@ public class NlpInputPayload {
     Map<String, Object> metadata;
 
     /**
+     *  Auxiliary data provided by client application that will be returned back.
+     */
+    @JsonProperty("footer")
+    Map<String, Object> footer;
+
+    /**
      * Checks whether the payload content is empty
      */
     public Boolean isEmpty() {

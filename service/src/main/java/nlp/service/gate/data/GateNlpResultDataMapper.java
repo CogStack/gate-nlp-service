@@ -22,7 +22,7 @@ public class GateNlpResultDataMapper extends NlpResultDataMapper {
         result.setAnnotations(annotations);
     }
 
-    public void setDocumentFeatures(List<GenericAnnotation> features) {
+    public void setDocumentFeatures(GenericAnnotation features) {
         result.getMetadata().put("document_features", features);
     }
 

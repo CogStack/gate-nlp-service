@@ -3,15 +3,17 @@ package nlp.service.gate.service;
 import nlp.common.model.document.GenericDocument;
 import nlp.common.model.protocol.NlpInputPayload;
 import nlp.common.model.protocol.NlpProcessingResult;
-import nlp.common.model.protocol.ProcessingError;
 import nlp.service.config.ServiceConfiguration;
 import nlp.service.gate.data.GateNlpContentDataMapper;
 import nlp.service.gate.data.GateNlpResultDataMapper;
-import nlp.service.gate.processor.GateApplicationParameters;
+import nlp.service.gate.processor.GateApplicationSetupParameters;
 import nlp.service.gate.processor.GateProcessor;
 import nlp.service.service.NlpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -24,7 +26,8 @@ public class GateNlpService extends NlpService {
      * Available configuration parameters for GATE
      */
     private class GateApplicationConfigurationKeys {
-        static final String GATE_HOME = "gateHome";
+        // Starting from GATE 8.5 GATE_HOME is not needed anymore
+        //static final String GATE_HOME = "gateHome";
         static final String GATE_APP_PATH = "gateAppPath";
         static final String GATE_CONTROLLER_NUM = "gateControllerNum";
         static final String ANNOTATION_SETS = "annotationSets";
@@ -42,14 +45,17 @@ public class GateNlpService extends NlpService {
     public GateNlpService(ServiceConfiguration config) throws Exception {
         super(config);
 
-        GateApplicationParameters gateParams = parseAppParams(config);
+        GateApplicationSetupParameters gateParams = parseAppParams(config);
 
         gateProcessor = new GateProcessor(gateParams);
     }
 
 
+    /**
+     * Process a single request.
+     */
     @Override
-    public NlpProcessingResult process(NlpInputPayload payload, Map<String, String> applicationParams) {
+    public NlpProcessingResult process(NlpInputPayload payload, Map<String, String> applicationParams) throws Exception {
 
         // parse the payload to GenericDocument handler
         //
@@ -72,13 +78,11 @@ public class GateNlpService extends NlpService {
         //
         GenericDocument outDoc;
         try {
-            outDoc = gateProcessor.process(doc, applicationParams);
+            outDoc = gateProcessor.processDocument(doc, applicationParams);
         } catch (Exception e) {
             String message = "Error processing NLP query: " + e.getMessage();
             log.error(message);
-
-            resultMapper.setError(ProcessingError.builder().message(message).build());
-            return resultMapper.getProcessingResult();
+            throw e;
         }
 
         // prepare the result payload
@@ -95,19 +99,68 @@ public class GateNlpService extends NlpService {
     }
 
 
-    private GateApplicationParameters parseAppParams(ServiceConfiguration config) throws Exception {
+    /**
+     * Process a bulk request.
+     */
+    @Override
+    public List<NlpProcessingResult> processBulk(List<NlpInputPayload> payloads,
+                                                 Map<String, String> applicationParams) throws Exception {
 
-        if (!config.getAppParams().containsKey(GateApplicationConfigurationKeys.GATE_HOME)) {
-            throw new Exception("GATE_HOME not set");
+        // parse the payload to GenericDocument handler
+        //
+        List<GenericDocument> inputDocuments = new ArrayList<>();
+        for (NlpInputPayload singlePayload : payloads) {
+            GateNlpContentDataMapper contentMapper = new GateNlpContentDataMapper(singlePayload);
+
+            GenericDocument doc = new GenericDocument();
+            doc.setText(contentMapper.getText());
+
+            if (contentMapper.getAnnotations().size() > 0) {
+                doc.setAnnotations(contentMapper.getAnnotations());
+            }
+
+            // TODO: handle (if required):
+            // - document-level features
+            // - linked attributes
+            // - binary document
+
+            inputDocuments.add(doc);
         }
 
-        if (!config.getAppParams().containsKey(GateApplicationConfigurationKeys.GATE_APP_PATH)) {
-            throw new Exception("GATE_APP_PATH not set");
+        // run GATE processor
+        //
+        List<GenericDocument> outDocs;
+        try {
+            outDocs = gateProcessor.processDocumentsBulk(inputDocuments, applicationParams);
+        } catch (Exception e) {
+            String message = "Error processing NLP query: " + e.getMessage();
+            log.error(message);
+            throw e;
         }
 
-        GateApplicationParameters gateParams = new GateApplicationParameters();
+        // prepare the result payload
+        //
+        List<NlpProcessingResult> results = new ArrayList<>();
+        for (GenericDocument doc : outDocs) {
+            GateNlpResultDataMapper resultMapper = new GateNlpResultDataMapper();
+            resultMapper.setText(doc.getText());
+            resultMapper.setAnnotations(doc.getAnnotations());
+            resultMapper.setDocumentFeatures(doc.getDocumentFeatures());
 
-        gateParams.setGateHome((String)config.getAppParams().get(GateApplicationConfigurationKeys.GATE_HOME));
+            // TODO: set in payload (if required):
+            // - binary document
+            // - enable/disable text inclusion
+
+            results.add(resultMapper.getProcessingResult());
+        }
+
+        return results;
+    }
+
+
+    private GateApplicationSetupParameters parseAppParams(ServiceConfiguration config) {
+
+        GateApplicationSetupParameters gateParams = new GateApplicationSetupParameters();
         gateParams.setGateAppPath((String)config.getAppParams().get(GateApplicationConfigurationKeys.GATE_APP_PATH));
 
         if (config.getAppParams().containsKey(GateApplicationConfigurationKeys.GATE_CONTROLLER_NUM)) {
