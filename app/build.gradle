@@ -15,13 +15,12 @@ buildscript {
 
 
 plugins {
-    id 'io.franzbecker.gradle-lombok' version '2.0'
     id 'java'
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
-//apply plugin: 'org.springframework.boot'
+apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group 'nlp'
@@ -37,28 +36,24 @@ repositories {
     jcenter()
 }
 
-// spring boot should be only included in the final application module
-// in the sub-modules we need to use automatic dependency management
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
-    }
-}
-
 
 dependencies {
 
     compile project(':common')
+    compile project(':service')
+    compile project(':gate')
 
-    compileOnly 'org.projectlombok:lombok:1.18.4'
 
     //implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
     // tests
+    sourceSets {
+        test {
+            java.srcDir project(':service').file("src/test/java/nlp/service/")
+        }}
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.1.0'
@@ -67,14 +62,4 @@ dependencies {
 
     testRuntime("org.junit.platform:junit-platform-launcher:1.4.2")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.2")
-
-    // old JUnit configuration
-    //testImplementation('junit:junit:4.12')
-    //testRuntime("org.junit.vintage:junit-vintage-engine:5.4.2")
 }
-
-// INFO: uncomment below to run JUnit 5 tests
-//
-//test {
-//    useJUnitPlatform()
-//}

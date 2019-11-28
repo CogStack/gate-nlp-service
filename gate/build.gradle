@@ -27,6 +27,7 @@ apply plugin: 'io.spring.dependency-management'
 group 'nlp'
 version '0.0.1-SNAPSHOT'
 
+
 //sourceCompatibility = JavaVersion.VERSION_11
 sourceCompatibility = JavaVersion.VERSION_1_9
 
@@ -37,6 +38,7 @@ repositories {
     jcenter()
 }
 
+
 // spring boot should be only included in the final application module
 // in the sub-modules we need to use automatic dependency management
 dependencyManagement {
@@ -46,19 +48,28 @@ dependencyManagement {
 }
 
 
+
 dependencies {
 
     compile project(':common')
+    compile project(':service')
 
     compileOnly 'org.projectlombok:lombok:1.18.4'
 
-    //implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
+    // specific for GATE NLP
+    compile('uk.ac.gate:gate-core:8.5')
+
+
     // tests
+    sourceSets {
+        test {
+            java.srcDir project(':service').file("src/test/java/nlp/service/utils/")
+    }}
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.1.0'
