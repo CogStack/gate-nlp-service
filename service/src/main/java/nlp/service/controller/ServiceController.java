@@ -1,9 +1,10 @@
 package nlp.service.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import nlp.common.model.protocol.*;
 import nlp.service.config.ApplicationConfiguration;
-import nlp.service.config.ServiceConfiguration;
-import nlp.service.service.NlpService;
+import nlp.service.config.JsonPropertyAccessView;
+import nlp.service.NlpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ import java.util.List;
 public class ServiceController {
 
     @Autowired
-    ServiceConfiguration config;
+    ApplicationConfiguration config;
 
     /**
      * Endpoints path specific configuration
@@ -49,11 +50,11 @@ public class ServiceController {
     /**
      * Instantiates the NLP application service Bean according to provided configuration.
      */
-    private NlpService getNlpService(ServiceConfiguration config) throws Exception {
+    private NlpService getNlpService(ApplicationConfiguration config) throws Exception {
         try {
             String appClassName = config.getAppClassName();
             return (NlpService) (Class.forName(appClassName)
-                    .getConstructor(ServiceConfiguration.class)
+                    .getConstructor(ApplicationConfiguration.class)
                     .newInstance(config));
         }
         catch (Exception e) {
@@ -66,10 +67,10 @@ public class ServiceController {
     /**
      * Returns the information about running NLP service, incl. its configuration.
      */
+    @JsonView(JsonPropertyAccessView.Public.class)
     @GetMapping(value = apiFullPath + "/info")
     public ResponseEntity<ApplicationConfiguration> info() {
-        ApplicationConfiguration conf = config.getAppConfig();
-        return new ResponseEntity<>(conf, HttpStatus.OK);
+        return new ResponseEntity<>(config, HttpStatus.OK);
     }
 
 
@@ -89,7 +90,8 @@ public class ServiceController {
             result.setError(ProcessingError.builder().message(message).build());
             response.setResult(result);
             log.info(message);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            HttpStatus status = config.isAppSingleDocEndpointFailOnEmptyContent() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(response, status);
         }
 
         // process the content

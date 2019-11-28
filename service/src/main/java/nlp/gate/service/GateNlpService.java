@@ -1,14 +1,14 @@
-package nlp.service.gate.service;
+package nlp.gate.service;
 
 import nlp.common.model.document.GenericDocument;
 import nlp.common.model.protocol.NlpInputPayload;
 import nlp.common.model.protocol.NlpProcessingResult;
-import nlp.service.config.ServiceConfiguration;
-import nlp.service.gate.data.GateNlpContentDataMapper;
-import nlp.service.gate.data.GateNlpResultDataMapper;
-import nlp.service.gate.processor.GateApplicationSetupParameters;
-import nlp.service.gate.processor.GateProcessor;
-import nlp.service.service.NlpService;
+import nlp.service.config.ApplicationConfiguration;
+import nlp.gate.data.GateNlpContentDataMapper;
+import nlp.gate.data.GateNlpResultDataMapper;
+import nlp.gate.processor.GateApplicationSetupParameters;
+import nlp.gate.processor.GateProcessor;
+import nlp.service.NlpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class GateNlpService extends NlpService {
     private Logger log = LoggerFactory.getLogger(GateNlpService.class);
 
 
-    public GateNlpService(ServiceConfiguration config) throws Exception {
+    public GateNlpService(ApplicationConfiguration config) throws Exception {
         super(config);
 
         GateApplicationSetupParameters gateParams = parseAppParams(config);
@@ -158,7 +158,7 @@ public class GateNlpService extends NlpService {
     }
 
 
-    private GateApplicationSetupParameters parseAppParams(ServiceConfiguration config) {
+    private GateApplicationSetupParameters parseAppParams(ApplicationConfiguration config) {
 
         GateApplicationSetupParameters gateParams = new GateApplicationSetupParameters();
         gateParams.setGateAppPath((String)config.getAppParams().get(GateApplicationConfigurationKeys.GATE_APP_PATH));

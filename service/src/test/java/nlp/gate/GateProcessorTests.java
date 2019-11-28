@@ -1,4 +1,4 @@
-package nlp.service.gate;
+package nlp.gate;
 
 // JUnit 5
 //import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,8 +17,8 @@ import java.util.*;
 import nlp.service.utils.TestUtils;
 import nlp.common.model.annotation.GenericAnnotation;
 import nlp.common.model.document.GenericDocument;
-import nlp.service.gate.processor.GateApplicationSetupParameters;
-import nlp.service.gate.processor.GateProcessor;
+import nlp.gate.processor.GateApplicationSetupParameters;
+import nlp.gate.processor.GateProcessor;
 
 
 /**

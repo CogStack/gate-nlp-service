@@ -15,7 +15,7 @@ The available properties with running the service are:
 
 ## NLP application
 The available properties with running the NLP application will be exposed to the client and these are:
-- `application.class.name` - the name of the application runner (for the moment, only GATE: `nlp.service.gate.service.GateNlpService`),
+- `application.class.name` - the name of the application runner (for the moment, only GATE: `nlp.gate.service.GateNlpService`),
 - `application.name` - the name of the application,
 - `application.version` - application version,
 - `application.language` - application language,

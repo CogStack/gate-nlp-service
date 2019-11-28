@@ -1,4 +1,4 @@
-package nlp.service.gate.utils;
+package nlp.gate.utils;
 
 import java.util.List;
 import java.util.ArrayList;

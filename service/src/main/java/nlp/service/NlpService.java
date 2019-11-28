@@ -1,8 +1,8 @@
-package nlp.service.service;
+package nlp.service;
 
 import nlp.common.model.protocol.NlpInputPayload;
 import nlp.common.model.protocol.NlpProcessingResult;
-import nlp.service.config.ServiceConfiguration;
+import nlp.service.config.ApplicationConfiguration;
 
 import java.util.List;
 import java.util.Map;
@@ -16,14 +16,14 @@ public abstract class NlpService {
     /**
      * NLP service configuration.
      */
-    private ServiceConfiguration config;
+    private ApplicationConfiguration config;
 
 
-    public NlpService(ServiceConfiguration config) {
+    public NlpService(ApplicationConfiguration config) {
         this.config = config;
      }
 
-    public ServiceConfiguration getConfig() {
+    public ApplicationConfiguration getConfig() {
         return config;
     }
 

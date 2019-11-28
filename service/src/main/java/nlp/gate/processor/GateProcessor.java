@@ -1,4 +1,4 @@
-package nlp.service.gate.processor;
+package nlp.gate.processor;
 
 import java.io.File;
 import java.util.*;
@@ -14,7 +14,8 @@ import gate.Document;
 import gate.util.persistence.PersistenceManager;
 import nlp.common.model.annotation.GenericAnnotation;
 import nlp.common.model.document.GenericDocument;
-import nlp.service.gate.utils.GateUtils;
+import nlp.gate.utils.GateUtils;
+import nlp.service.processor.NlpProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * GATE Document processor
  */
-public class GateProcessor {
+public class GateProcessor extends NlpProcessor {
 
     /**
      * Use by default only one gate corpus controller to do NLP processing.

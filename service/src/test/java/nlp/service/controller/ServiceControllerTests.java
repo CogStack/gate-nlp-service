@@ -27,8 +27,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import nlp.common.model.annotation.GenericAnnotation;
 import nlp.common.model.document.GenericDocument;
 import nlp.common.model.protocol.ServiceSingleResponseContent;
-import nlp.service.ServiceApplication;
-import nlp.service.config.ServiceConfiguration;
+import app.ServiceApplication;
+import nlp.service.config.ApplicationConfiguration;
 import nlp.service.utils.TestUtils;
 
 
@@ -41,7 +41,7 @@ import nlp.service.utils.TestUtils;
 @SpringBootTest(classes = ServiceApplication.class)
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
-@ContextConfiguration(classes = {ServiceConfiguration.class})
+@ContextConfiguration(classes = {ApplicationConfiguration.class})
 @TestPropertySource(locations = "classpath:test-application.properties")
 public class ServiceControllerTests {
 

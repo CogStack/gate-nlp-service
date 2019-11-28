@@ -40,7 +40,7 @@ repositories {
 
 dependencies {
 
-    compile project(':common')
+    //compile project(':common')
 
     compileOnly 'org.projectlombok:lombok:1.18.4'
 
