@@ -35,7 +35,7 @@ public class ApplicationConfiguration {
     @JsonView(JsonPropertyAccessView.Public.class)
     String appLanguage;
 
-    @Value("${application.endpoint.single-doc.fail-on-empty-content:true}")
+    @Value("${endpoint.single-doc.fail-on-empty-content:true}")
     @JsonProperty("single_doc_endpoint_fail_on_empty_content")
     @JsonView(JsonPropertyAccessView.Public.class)
     boolean appSingleDocEndpointFailOnEmptyContent;

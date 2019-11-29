@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Import;
 @Import({nlp.service.controller.ServiceController.class,
 		nlp.service.config.ApplicationConfiguration.class,
 		nlp.gate.service.GateNlpService.class})
-
 public class ServiceApplication {
 
 	public static void main(String[] args) {

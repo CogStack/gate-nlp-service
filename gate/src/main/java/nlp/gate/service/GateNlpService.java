@@ -30,7 +30,7 @@ public class GateNlpService extends NlpService {
         //static final String GATE_HOME = "gateHome";
         static final String GATE_APP_PATH = "gateAppPath";
         static final String GATE_CONTROLLER_NUM = "gateControllerNum";
-        static final String ANNOTATION_SETS = "annotationSets";
+        static final String ANNOTATION_SETS = "gateAnnotationSets";
     }
 
     /**

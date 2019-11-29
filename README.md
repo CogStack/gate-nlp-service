@@ -7,12 +7,12 @@ For the moment, only a runner for [GATE NLP](https://gate.ac.uk/) (using GATE Em
 
 # Configuration
 
-The application requires a configuration file, which specifies which NLP application should be run with additional parameters. 
+The application requires a configuration file, which specifies which GATE NLP application should be run with additional parameters. 
 
 ## Service
 The available properties with running the service are:
 - `server.port` - the port number on which the Service will be listening (default: `8095`).
-- `application.endpoint.single-doc.fail-on-empty-content` - whether to fail on receiving an empty document when processing single document (default: `false`).
+- `endpoint.single-doc.fail-on-empty-content` - whether to fail on receiving an empty document when processing single document (default: `false`).
 
 ## NLP application
 The available properties with running the NLP application will be exposed to the client and these are:
@@ -21,11 +21,11 @@ The available properties with running the NLP application will be exposed to the
 - `application.language` - application language,
 - `application.params` - NLP-application specific parameters.
 
-In case of running a GATE Application, the available parameters are:
+When providing a GATE application, some of the available parameters are:
 - `gateAppPath` - the path to the GATE application to be run (mandatory),
 - `gateHome` - the path to GATE installation directory (mandatory),
-- `annotationSets` - the annotations sets to be used (optional),
-- `gateControllerNum` - the number of GATE controllers to be run in parallel (for multi-threading).
+- `gateControllerNum` - the number of GATE controllers to be run in parallel (for multi-threading),
+- `gateAnnotationSets` - the annotations sets to be used (optional).
 
 ## Example
 
