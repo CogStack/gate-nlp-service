@@ -15,7 +15,7 @@ services:
       target: service-runner-gate
     volumes:
       # configuration files
-      - ./service/config/example-drug:/app/nlp-service/config:ro
+      - ./config/example-drug:/app/nlp-service/config:ro
       #- ./service/run.sh:/app/nlp-service/run.sh:ro
       # GATE app: example drug app
       - ../resources/gate/drug-app:/gate/app/drug-app:ro
@@ -29,8 +29,7 @@ services:
       target: service-runner-gate
     volumes:
     # configuration files
-    - ./service/config/bioyodie:/app/nlp-service/config:ro
-    - ./service/run.sh:/app/nlp-service/run.sh:ro
+    - ./config/bioyodie:/app/nlp-service/config:ro
     # GATE app: bioyodie
     # needs to configure the paths for application and UMLS resources
     - /Users/lroguski/devel/projects/github/bio-YODIE:/gate/app/bioyodie:ro
@@ -38,21 +37,3 @@ services:
     ports:
     - "8096:8095"
     command: bash /app/nlp-service/run.sh
-
-#---------------------------------------------------------------------------#
-# Gateway                                                                   #
-#---------------------------------------------------------------------------#
-  gateway:
-    build:
-      context: ..
-      target: gateway-runner
-    volumes:
-      - ./gateway/config:/app/gateway/config:ro
-      - ./gateway/services:/app/gateway/services:ro
-      #- ./gateway/run.sh:/app/gateway/run.sh:ro
-    depends_on:
-      - gate-nlp-drug
-      - gate-nlp-bioyodie
-    ports:
-      - "8090:8090"
-    command: bash /app/gateway/run.sh

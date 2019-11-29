@@ -25,7 +25,7 @@ apply plugin: 'eclipse'
 apply plugin: 'io.spring.dependency-management'
 
 group 'nlp'
-version '0.0.1-SNAPSHOT'
+version '0.2.1'
 
 //sourceCompatibility = JavaVersion.VERSION_11
 sourceCompatibility = JavaVersion.VERSION_1_9
