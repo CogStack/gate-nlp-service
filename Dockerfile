@@ -37,7 +37,7 @@ COPY . /devel/
 
 
 # build service
-RUN ./gradlew :service:bootJar --no-daemon
+RUN ./gradlew :app:bootJar --no-daemon
 
 
 
@@ -53,7 +53,7 @@ RUN ./gradlew :service:bootJar --no-daemon
 FROM openjdk:11-jre-slim AS jre-11-base
 
 RUN apt-get update && \
-	apt-get install -y curl && \
+	apt-get install -y curl unzip && \
 	apt-get clean autoclean && \
 	apt-get autoremove -y && \
 	rm -rf /var/lib/apt/lists/*
@@ -70,7 +70,7 @@ RUN mkdir -p /app/nlp-service
 WORKDIR /app/nlp-service
 
 # copy artifacts
-COPY --from=service-builder /devel/service/build/libs/service-*.jar ./
+COPY --from=service-builder /devel/app/build/libs/app-*.jar ./
 
 # entry point
 CMD /bin/bash
@@ -109,7 +109,7 @@ RUN curl -L 'https://github.com/GateNLP/gcp/releases/download/v3.0/gcp-dist-3.0-
 
 # copy the helper scripts
 WORKDIR /app/nlp-service
-COPY ./service/scripts/*.sh ./
+COPY ./scripts/*.sh ./
 
 # entry point
 CMD /bin/bash

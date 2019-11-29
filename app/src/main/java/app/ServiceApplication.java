@@ -6,7 +6,8 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import({nlp.service.controller.ServiceController.class,
-		nlp.service.config.ApplicationConfiguration.class})
+		nlp.service.config.ApplicationConfiguration.class,
+		nlp.gate.service.GateNlpService.class})
 
 public class ServiceApplication {
 

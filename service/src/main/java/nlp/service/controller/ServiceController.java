@@ -21,8 +21,16 @@ import java.util.List;
 @RestController
 public class ServiceController {
 
+    /**
+     * The application configuration and the actual NLP service are autowired, they will
+     * be provided by the implementing service application.
+     */
     @Autowired
     ApplicationConfiguration config;
+
+    @Autowired
+    private NlpService service;
+
 
     /**
      * Endpoints path specific configuration
@@ -32,36 +40,7 @@ public class ServiceController {
     //private final String apiVersion = "v1";
     private final String apiFullPath = apiPathPrefix;
 
-
-    /**
-     * The NLP service used.
-     */
-    private NlpService service;
-
     private Logger log = LoggerFactory.getLogger(ServiceController.class);
-
-
-    @PostConstruct
-    public void init() throws Exception {
-        service = getNlpService(config);
-    }
-
-
-    /**
-     * Instantiates the NLP application service Bean according to provided configuration.
-     */
-    private NlpService getNlpService(ApplicationConfiguration config) throws Exception {
-        try {
-            String appClassName = config.getAppClassName();
-            return (NlpService) (Class.forName(appClassName)
-                    .getConstructor(ApplicationConfiguration.class)
-                    .newInstance(config));
-        }
-        catch (Exception e) {
-            log.error("Cannot instantiate the NLP service: " + e.getMessage());
-            throw e;
-        }
-    }
 
 
     /**

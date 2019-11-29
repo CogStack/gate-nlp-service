@@ -1,14 +1,10 @@
 package nlp.service.config;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
@@ -52,11 +48,4 @@ public class ApplicationConfiguration {
     @JsonProperty("params")
     @JsonView(JsonPropertyAccessView.Public.class)
     Map<String, Object> appParams;
-
-    /**
-     * The name of the Java class implementing the NlpService interface
-     */
-    @Value("${application.class.name}")
-    @JsonIgnore
-    String appClassName;
 }

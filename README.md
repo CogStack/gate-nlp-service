@@ -1,32 +1,36 @@
 # Introduction
-This project implements the NLP as a service behind a REST API using [Spring Boot](https://spring.io/). The general idea is to be able send the text to NLP service and receive back the annotations.
+
+The `service` component implements an NLP application runner for text-processing and exposes a REST endpoint for communication.
+
+For the moment, only a runner for [GATE NLP](https://gate.ac.uk/) (using GATE Embedded) applications has been implemented.
 
 
-## Project contents
+# Configuration
 
-This project consists of following packages: `common`, `service` and `gateway`.
+The application requires a configuration file, which specifies which NLP application should be run with additional parameters. 
 
-### Common
- `common` package contains the common data model shared beteeen the `service` and `gateway` packages.
-  
-### Service
-`service` package contains an exemplar implementation of a NLP service that expose REST API for processing the documents. 
+## Service
+The available properties with running the service are:
+- `server.port` - the port number on which the Service will be listening (default: `8095`).
 
-For the moment, as an exemplar implementation, it only provides a wrapper around [GATE Embedded](https://gate.ac.uk/family/embedded.html) that can run any GATE application.
+## NLP application
+The available properties with running the NLP application will be exposed to the client and these are:
+- `application.class.name` - the name of the application runner (for the moment, only GATE: `nlp.gate.service.GateNlpService`),
+- `application.name` - the name of the application,
+- `application.version` - application version,
+- `application.language` - application language,
+- `application.params` - NLP-application specific parameters.
 
-### Gateway
-`gateway` package contains the Gateway implementation that will serve as a middle man between the actual NLP service and the client. It handles the communication between the services and exposes a uniform API.
+In case of running a GATE Application, the available parameters are:
+- `gateAppPath` - the path to the GATE application to be run (mandatory),
+- `gateHome` - the path to GATE installation directory (mandatory),
+- `annotationSets` - the annotations sets to be used (optional),
+- `gateControllerNum` - the number of GATE controllers to be run in parallel (for multi-threading).
 
-For the moment, the Gateway serves only as a proxy between the internal NLP services and the client, and exposes the REST API compatible with the internal NLP services. 
+## Example
 
-In the next step, ther Gateway should expose the API compatible with [NLPRP REST API](https://crateanon.readthedocs.io/en/latest/nlp/nlprp.html) and allow for handling multiple NLP services with parallel processing and queueing mechanisms.
+An example configuration file is provided in `src/main/resources/application.properties`
 
+# API specification
 
-# Building
-
-The detailed instructions on building individual applications are provided in their respecive package directories.
-
-
-# Usage
-
-For the moment, for the ease of use, please use the individual NLP service wrapper as a standalone service. The detailed instructions on it's use are available in `service` directory.
+The API specificaiton in [OpenAPI](https://www.openapis.org/) standard is provided in `api-specs` directory - please refer to: [openapi.yaml](api-specs/openapi.yaml)
