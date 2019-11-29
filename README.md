@@ -1,6 +1,6 @@
 # Introduction
 
-The `service` component implements an NLP application runner for text-processing and exposes a REST endpoint for communication.
+This project implements an NLP application runner for text-processing that exposes a REST endpoint for communication.
 
 For the moment, only a runner for [GATE NLP](https://gate.ac.uk/) (using GATE Embedded) applications has been implemented.
 
@@ -12,10 +12,10 @@ The application requires a configuration file, which specifies which NLP applica
 ## Service
 The available properties with running the service are:
 - `server.port` - the port number on which the Service will be listening (default: `8095`).
+- `application.endpoint.single-doc.fail-on-empty-content` - whether to fail on receiving an empty document when processing single document (default: `false`).
 
 ## NLP application
 The available properties with running the NLP application will be exposed to the client and these are:
-- `application.class.name` - the name of the application runner (for the moment, only GATE: `nlp.gate.service.GateNlpService`),
 - `application.name` - the name of the application,
 - `application.version` - application version,
 - `application.language` - application language,
@@ -29,7 +29,7 @@ In case of running a GATE Application, the available parameters are:
 
 ## Example
 
-An example configuration file is provided in `src/main/resources/application.properties`
+An example configuration file is provided in `app/src/main/resources/application.properties`
 
 # API specification
 
