@@ -10,15 +10,13 @@ import nlp.common.model.protocol.NlpProcessingResult;
 import nlp.common.model.protocol.ServiceBulkResponseContent;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,8 +25,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import nlp.common.model.annotation.GenericAnnotation;
 import nlp.common.model.document.GenericDocument;
 import nlp.common.model.protocol.ServiceSingleResponseContent;
-import nlp.service.ServiceApplication;
-import nlp.service.config.ServiceConfiguration;
 import nlp.service.utils.TestUtils;
 
 
@@ -38,12 +34,7 @@ import nlp.service.utils.TestUtils;
  *  For the moment, only GATE controller is used and the example GATE application includes
  *  a simple Drug application identifying common drug names.
  */
-@SpringBootTest(classes = ServiceApplication.class)
-@RunWith(SpringRunner.class)
-@AutoConfigureMockMvc
-@ContextConfiguration(classes = {ServiceConfiguration.class})
-@TestPropertySource(locations = "classpath:test-application.properties")
-public class ServiceControllerTests {
+public abstract class ServiceControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
