@@ -41,30 +41,6 @@ RUN ./gradlew :service:bootJar --no-daemon
 
 
 
-################################
-#
-# Gateway Builder
-#
-FROM jdk-11-base AS gateway-builder
-
-# setup the build environment
-RUN mkdir -p /devel
-WORKDIR /devel
-
-COPY ./gradle/wrapper /devel/gradle/wrapper
-COPY ./gradlew /devel/
-
-RUN ./gradlew --version
-
-COPY ./settings.gradle /devel/
-COPY . /devel/
-
-
-# build gateway
-RUN ./gradlew :gateway:bootJar --no-daemon
-
-
-
 ################################################################
 #
 # RUN STEPS
@@ -99,22 +75,6 @@ COPY --from=service-builder /devel/service/build/libs/service-*.jar ./
 # entry point
 CMD /bin/bash
 
-
-################################
-#
-# Gateway Runner
-#
-FROM jre-11-base AS gateway-runner
-
-# setup env
-RUN mkdir -p /app/gateway/
-WORKDIR /app/gateway
-
-# copy artifacts
-COPY --from=gateway-builder /devel/gateway/build/libs/gateway-*.jar ./
-
-# entry point
-CMD /bin/bash
 
 
 ################################
