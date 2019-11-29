@@ -52,7 +52,7 @@ dependencies {
     // tests
     sourceSets {
         test {
-            java.srcDir project(':service').file("src/test/java/nlp/service/")
+            java.srcDir project(':service').file("src/test/java/")
         }}
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
