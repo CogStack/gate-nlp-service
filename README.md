@@ -23,9 +23,9 @@ The available properties with running the NLP application will be exposed to the
 
 When providing a GATE application, some of the available parameters are:
 - `gateAppPath` - the path to the GATE application to be run (mandatory),
-- `gateHome` - the path to GATE installation directory (mandatory),
-- `gateControllerNum` - the number of GATE controllers to be run in parallel (for multi-threading),
-- `gateAnnotationSets` - the annotations sets to be used (optional).
+- `gateControllerNum` - the number of GATE controllers that can be run in parallel, used for multi-threading (default: `1`),
+- `gateAnnotationSets` - the annotations sets to be used (optional, default: `*`),
+- `gateIncludeAnnotationText` - whether to include the `text` field with the annotation text (optional, default: `false`).
 
 ## Example
 
