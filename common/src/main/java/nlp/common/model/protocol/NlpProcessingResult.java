@@ -1,11 +1,15 @@
 package nlp.common.model.protocol;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import nlp.common.model.annotation.GenericAnnotation;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
 /**
@@ -39,6 +43,14 @@ public class NlpProcessingResult {
      */
     @JsonProperty("success")
     Boolean success;
+
+    /**
+     * NLP processing timestamp.
+     */
+    @JsonProperty("timestamp")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    OffsetDateTime timestamp;
 
     /**
      * Possible errors.

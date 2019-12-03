@@ -31,13 +31,6 @@ public class GateProcessor extends NlpProcessor {
     private static final int DEFAULT_GATE_CONTROLLERS_NUM = 1;
 
     /**
-     * Available parameters that can be specified during runtime.
-     */
-    private class GateApplicationRuntimeParamKeys {
-        static final String ANNOTATION_SETS = "annotationSets";
-    }
-
-    /**
      * GATE corpus controller pool for support for parallel processing of documents.
      */
     private BlockingQueue<CorpusController> controllerPool;
@@ -48,12 +41,12 @@ public class GateProcessor extends NlpProcessor {
      */
     private Map<String, Set<String>> availableAnnotationSets;
 
+    private GateApplicationSetupParameters params;
 
     private Logger log = LoggerFactory.getLogger(GateProcessor.class);
 
 
     public GateProcessor(GateApplicationSetupParameters params) throws Exception {
-
         initGateFramework(params);
         log.info("GATE framework initialized");
 
@@ -62,6 +55,8 @@ public class GateProcessor extends NlpProcessor {
 
         parseAdditionalAppParams(params);
         log.info("GATE NLP application configuration set");
+
+        this.params = params;
 
         // decrease verbosity of some of the GATE plugins (if used)
         if (LogManager.getLogManager().getLogger("HeidelTimeWrapper") != null) {
@@ -274,7 +269,10 @@ public class GateProcessor extends NlpProcessor {
      * Parses additional parameters provided as key-values in the configuration.
      */
     private void parseAdditionalAppParams(GateApplicationSetupParameters params) {
-        if (params.getAnnotationSets() != null && params.getAnnotationSets().length() > 0) {
+        if (params.getAnnotationSets() == null)
+            return;
+
+        if (params.getAnnotationSets().length() > 0) {
             availableAnnotationSets = GateUtils.getAnnotationTypeSets(params.getAnnotationSets());
         }
     }
@@ -323,14 +321,6 @@ public class GateProcessor extends NlpProcessor {
         if (availableAnnotationSets != null && availableAnnotationSets.size() > 0)
             annSets = new HashMap<>(availableAnnotationSets);
 
-        if (applicationParams != null && applicationParams.containsKey(GateApplicationRuntimeParamKeys.ANNOTATION_SETS)) {
-            Map<String, Set<String>> queryAnnSet = GateUtils.getAnnotationTypeSets(applicationParams.get(GateApplicationRuntimeParamKeys.ANNOTATION_SETS));
-            if (annSets == null)
-                annSets = queryAnnSet;
-            else
-                annSets = GateUtils.getAnnotationTypesSetsIntersection(annSets, queryAnnSet);
-        }
-
         // select appropriate annotations set
         List<GenericAnnotation> anns;
         if (annSets != null)
@@ -339,7 +329,9 @@ public class GateProcessor extends NlpProcessor {
             anns = GateUtils.getAtomicAnnotations(gateDoc);
 
         // refine the annotations
-        GateUtils.refineAtomicAnnotations(anns, gateDoc);
+        if (params.isIncludeAnotationText()) {
+            GateUtils.refineAtomicAnnotations(anns, gateDoc);
+        }
 
         return anns;
     }

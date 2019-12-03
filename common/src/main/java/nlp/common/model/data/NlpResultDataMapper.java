@@ -1,5 +1,6 @@
 package nlp.common.model.data;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,6 +20,7 @@ public abstract class NlpResultDataMapper {
         result = new NlpProcessingResult();
         result.setMetadata(new HashMap<>());
         result.setSuccess(true);
+        result.setTimestamp(OffsetDateTime.now());
     }
 
     public void setError(ProcessingError error) {

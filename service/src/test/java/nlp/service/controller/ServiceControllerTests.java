@@ -3,25 +3,21 @@ package nlp.service.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
-import nlp.common.model.protocol.NlpProcessingResult;
-import nlp.common.model.protocol.ServiceBulkResponseContent;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import nlp.common.model.protocol.NlpProcessingResult;
+import nlp.common.model.protocol.ServiceBulkResponseContent;
 import nlp.common.model.annotation.GenericAnnotation;
 import nlp.common.model.document.GenericDocument;
 import nlp.common.model.protocol.ServiceSingleResponseContent;
@@ -92,6 +88,7 @@ public abstract class ServiceControllerTests {
             assertEquals(HttpStatus.OK.value(), status, "Incorrect Response Status");
 
             ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
             ServiceSingleResponseContent response = mapper.readValue(result.getResponse().getContentAsString(),
                     ServiceSingleResponseContent.class);
 
@@ -124,6 +121,7 @@ public abstract class ServiceControllerTests {
 
         // parse the content
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         ServiceSingleResponseContent response = mapper.readValue(result.getResponse().getContentAsString(),
                                                             ServiceSingleResponseContent.class);
 
@@ -158,6 +156,7 @@ public abstract class ServiceControllerTests {
 
         // parse the content
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         ServiceSingleResponseContent response = mapper.readValue(result.getResponse().getContentAsString(),
                 ServiceSingleResponseContent.class);
 
@@ -184,6 +183,7 @@ public abstract class ServiceControllerTests {
         assertEquals(HttpStatus.OK.value(), status, "Incorrect Response Status");
 
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         ServiceBulkResponseContent response = mapper.readValue(result.getResponse().getContentAsString(),
                 ServiceBulkResponseContent.class);
 
@@ -217,6 +217,7 @@ public abstract class ServiceControllerTests {
         assertEquals(HttpStatus.OK.value(), status, "Incorrect Response Status");
 
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         ServiceBulkResponseContent response = mapper.readValue(result.getResponse().getContentAsString(),
                 ServiceBulkResponseContent.class);
 

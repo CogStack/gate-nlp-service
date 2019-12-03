@@ -1,64 +1,33 @@
-buildscript {
-    ext {
-        springBootPlugin = 'org.springframework.boot:spring-boot-gradle-plugin'
-        springBootVersion = '2.1.2.RELEASE'
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
-}
-
-
 plugins {
     id 'io.franzbecker.gradle-lombok' version '2.0'
-    id 'java'
 }
-
-apply plugin: 'java'
-apply plugin: 'eclipse'
-//apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-
-group 'nlp'
-version projectVersion
-
-//sourceCompatibility = JavaVersion.VERSION_11
-sourceCompatibility = JavaVersion.VERSION_1_9
-
-
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
-// spring boot should be only included in the final application module
-// in the sub-modules we need to use automatic dependency management
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
-    }
-}
-
 
 dependencies {
-
+    // inter-module deps
+    //
     compile project(':common')
 
+
+    // library deps
+    //
     compileOnly 'org.projectlombok:lombok:1.18.4'
 
-    //implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    // json serialization
+    compile 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.8'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.9.8'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
+
     // tests
+    //
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.1.0'

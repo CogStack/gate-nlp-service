@@ -31,6 +31,7 @@ public class GateNlpService extends NlpService {
         static final String GATE_APP_PATH = "gateAppPath";
         static final String GATE_CONTROLLER_NUM = "gateControllerNum";
         static final String ANNOTATION_SETS = "gateAnnotationSets";
+        static final String INCLUDE_ANNOTATION_TEXT = "gateIncludeAnnotationText";
     }
 
     /**
@@ -170,6 +171,10 @@ public class GateNlpService extends NlpService {
 
         if (config.getAppParams().containsKey(GateApplicationConfigurationKeys.ANNOTATION_SETS)) {
             gateParams.setAnnotationSets((String)config.getAppParams().get(GateApplicationConfigurationKeys.ANNOTATION_SETS));
+        }
+
+        if (config.getAppParams().containsKey(GateApplicationConfigurationKeys.INCLUDE_ANNOTATION_TEXT)) {
+            gateParams.setIncludeAnotationText((boolean)config.getAppParams().get(GateApplicationConfigurationKeys.INCLUDE_ANNOTATION_TEXT));
         }
 
         return gateParams;

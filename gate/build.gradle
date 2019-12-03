@@ -1,59 +1,16 @@
-buildscript {
-    ext {
-        springBootPlugin = 'org.springframework.boot:spring-boot-gradle-plugin'
-        springBootVersion = '2.1.2.RELEASE'
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
-}
-
-
 plugins {
     id 'io.franzbecker.gradle-lombok' version '2.0'
-    id 'java'
 }
-
-apply plugin: 'java'
-apply plugin: 'eclipse'
-//apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-
-group 'nlp'
-version projectVersion
-
-//sourceCompatibility = JavaVersion.VERSION_11
-sourceCompatibility = JavaVersion.VERSION_1_9
-
-
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
-
-// spring boot should be only included in the final application module
-// in the sub-modules we need to use automatic dependency management
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
-    }
-}
-
-
 
 dependencies {
-
     // inter-module dependencies
+    //
     compile project(':common')
     compile project(':service')
 
+
+    // library dependencies
+    //
     compileOnly 'org.projectlombok:lombok:1.18.4'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -61,13 +18,14 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
-
     // specific for GATE NLP
     compile('uk.ac.gate:gate-core:8.5')
 
 
-    // need test utils from 'service' module
+    // tests
+    //
     sourceSets {
+        // need test utils from 'service' module
         test {
             java.srcDir project(':service').file("src/test/java/")
     }}
@@ -80,14 +38,4 @@ dependencies {
 
     testRuntime("org.junit.platform:junit-platform-launcher:1.4.2")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.2")
-
-    // old JUnit configuration
-    //testImplementation('junit:junit:4.12')
-    //testRuntime("org.junit.vintage:junit-vintage-engine:5.4.2")
 }
-
-// INFO: uncomment below to run JUnit 5 tests
-//
-//test {
-//    useJUnitPlatform()
-//}

@@ -10,8 +10,8 @@ import lombok.Data;
 public class GateApplicationSetupParameters {
     // Starting from GATE 8.5 GATE_HOME is no longer needed
     //String gateHome;
-
     String gateAppPath;
     int gateControllersNum;
     String annotationSets;
+    boolean includeAnotationText;
 }

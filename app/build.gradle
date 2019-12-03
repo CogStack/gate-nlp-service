@@ -1,56 +1,29 @@
-buildscript {
-    ext {
-        springBootPlugin = 'org.springframework.boot:spring-boot-gradle-plugin'
-        springBootVersion = '2.1.2.RELEASE'
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
-}
-
-
 plugins {
-    id 'java'
+    id "org.springframework.boot" version "2.1.2.RELEASE"
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-
-group 'nlp'
-version projectVersion
-
-//sourceCompatibility = JavaVersion.VERSION_11
-sourceCompatibility = JavaVersion.VERSION_1_9
-
-
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
 
 
 dependencies {
-
+    // inter-module deps
+    //
     compile project(':common')
     compile project(':service')
     compile project(':gate')
 
 
-    //implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    // library deps
+    //
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
+
     // tests
+    //
     sourceSets {
+        // need test utils from 'service' module
         test {
             java.srcDir project(':service').file("src/test/java/")
         }}
