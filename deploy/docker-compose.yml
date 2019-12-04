@@ -21,7 +21,6 @@ services:
       - ../resources/gate/drug-app:/gate/app/drug-app:ro
     ports:
       - "8095:8095"
-    command: bash /app/nlp-service/run.sh
 
   gate-nlp-bioyodie:
     build:
@@ -36,4 +35,3 @@ services:
     - /Users/lroguski/data/UMLS/for-bioyodie/bio-yodie-resources:/gate/app/bioyodie/bio-yodie-resources:ro
     ports:
     - "8096:8095"
-    command: bash /app/nlp-service/run.sh

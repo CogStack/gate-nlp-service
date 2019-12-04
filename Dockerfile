@@ -111,5 +111,5 @@ RUN curl -L 'https://github.com/GateNLP/gcp/releases/download/v3.0/gcp-dist-3.0-
 WORKDIR /app/nlp-service
 COPY ./scripts/*.sh ./
 
-# entry point
-CMD /bin/bash
+# run the service app
+CMD ["/bin/bash", "run.sh"]
