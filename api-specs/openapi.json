@@ -7,7 +7,7 @@
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "0.1.0"
+    "version": "0.1.1"
   },
   "externalDocs": {
     "description": "Find out more about NLP Service",
@@ -248,6 +248,10 @@
           },
           "success": {
             "type": "boolean"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
           },
           "errors": {
             "type": "array",

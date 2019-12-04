@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "Description of the initial NLP Service REST API. \n You can find out more the application at [http://github.com/CogStack/nlp-rest-service](http://github.com/CogStack/nlp-rest-service).",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "title": "NLP Service REST API",
     "license": {
       "name": "Apache 2.0",
@@ -216,6 +216,10 @@
         },
         "success": {
           "type": "boolean"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
         },
         "errors": {
           "type": "array",
