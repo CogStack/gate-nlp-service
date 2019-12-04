@@ -30,21 +30,30 @@ public class GateUtils {
 
     private static Logger log = LoggerFactory.getLogger(GateUtils.class);
 
+    /**
+     * Additional params used when parsing
+     */
+    private boolean includeAtomicNodeIds;
+
+
+    public GateUtils(boolean includeAtomicNodeIds) {
+        this.includeAtomicNodeIds = includeAtomicNodeIds;
+    }
 
     /**
      * Extracts ALL annotations from the GATE document.
      */
-    public static List<GenericAnnotation> getAtomicAnnotations(Document gateDoc) {
+    public List<GenericAnnotation> getAtomicAnnotations(Document gateDoc) {
         List<GenericAnnotation> atomicAnns = new ArrayList<>();
 
         // get the default annotation set -- all if filters are not specified
         AnnotationSet defaultSet = gateDoc.getAnnotations(GATE_DEFAULT_ANNOTATION_SET_NAME);
-        defaultSet.forEach(ann -> atomicAnns.add(GateUtils.toAtomicAnnotation(ann, GATE_DEFAULT_ANNOTATION_SET_NAME)));
+        defaultSet.forEach(ann -> atomicAnns.add(toAtomicAnnotation(ann, GATE_DEFAULT_ANNOTATION_SET_NAME)));
 
         // get all the annotation sets
         gateDoc.getAnnotationSetNames().forEach(setName ->
                 gateDoc.getAnnotations(setName).forEach(ann ->
-                        atomicAnns.add(GateUtils.toAtomicAnnotation(ann, setName))));
+                        atomicAnns.add(toAtomicAnnotation(ann, setName))));
 
         return atomicAnns;
     }
@@ -52,8 +61,8 @@ public class GateUtils {
     /**
      * Extracts annotations from the GATE document according to specified annotation sets.
      */
-    public static List<GenericAnnotation> getAtomicAnnotations(Document gateDoc,
-                                                               Map<String, Set<String>> annotationTypesSets) {
+    public List<GenericAnnotation> getAtomicAnnotations(Document gateDoc,
+                                                        Map<String, Set<String>> annotationTypesSets) {
         List<GenericAnnotation> atomicAnns = new ArrayList<>();
 
         // get all types without the ann set names: *:type
@@ -67,12 +76,12 @@ public class GateUtils {
             // TODO: or shall it be specially handled ???
             AnnotationSet defaultSet = gateDoc.getAnnotations(GATE_DEFAULT_ANNOTATION_SET_NAME);
             defaultSet.get(typeNames)
-                    .forEach(annotation -> atomicAnns.add(GateUtils.toAtomicAnnotation(annotation, GATE_DEFAULT_ANNOTATION_SET_NAME)));
+                    .forEach(annotation -> atomicAnns.add(toAtomicAnnotation(annotation, GATE_DEFAULT_ANNOTATION_SET_NAME)));
 
             // go though the named annotation sets
             gateDoc.getAnnotationSetNames()
                     .forEach(setName -> gateDoc.getAnnotations(setName).get(typeNames)
-                            .forEach(annotation -> atomicAnns.add(GateUtils.toAtomicAnnotation(annotation, GATE_DEFAULT_ANNOTATION_SET_NAME)))
+                            .forEach(annotation -> atomicAnns.add(toAtomicAnnotation(annotation, GATE_DEFAULT_ANNOTATION_SET_NAME)))
                     );
 
             // remove the MATCH_ANY filter and continue with the remaining filters
@@ -91,11 +100,11 @@ public class GateUtils {
 
             if (typeNames.size() == 0) {
                 gateDoc.getAnnotations(pair.getKey())
-                        .forEach(annotation -> atomicAnns.add(GateUtils.toAtomicAnnotation(annotation, pair.getKey())));
+                        .forEach(annotation -> atomicAnns.add(toAtomicAnnotation(annotation, pair.getKey())));
             } else {
                 gateDoc.getAnnotations(pair.getKey())
                         .get(typeNames)
-                        .forEach(annotation -> atomicAnns.add(GateUtils.toAtomicAnnotation(annotation, pair.getKey())));
+                        .forEach(annotation -> atomicAnns.add(toAtomicAnnotation(annotation, pair.getKey())));
             }
         }
 
@@ -105,7 +114,7 @@ public class GateUtils {
     /**
      * Refines the annotations to include the text they refer to.
      */
-    public static void refineAtomicAnnotations(List<GenericAnnotation> atomicAnnotations, Document gateDoc) {
+    public void refineAtomicAnnotations(List<GenericAnnotation> atomicAnnotations, Document gateDoc) {
         for (GenericAnnotation ann : atomicAnnotations) {
             if (ann.getAttributes().containsKey("start_idx") && ann.getAttributes().containsKey("end_idx")) {
                 Long startIdx = (Long)ann.getAttributes().get("start_idx");
@@ -119,7 +128,7 @@ public class GateUtils {
     /**
      * Converts from GATE annotation type.
      */
-    private static GenericAnnotation toAtomicAnnotation(Annotation gateAnnotation, String setName) {
+    private GenericAnnotation toAtomicAnnotation(Annotation gateAnnotation, String setName) {
         GenericAnnotation atomicAnn = new GenericAnnotation();
 
         // TODO:
@@ -134,8 +143,11 @@ public class GateUtils {
         // attributes / features
         atomicAnn.setAttribute("set", setName);
         atomicAnn.setAttribute("id", gateAnnotation.getId());
-        atomicAnn.setAttribute("start_node_id", gateAnnotation.getStartNode().getId().toString());
-        atomicAnn.setAttribute("end_node_id", gateAnnotation.getEndNode().getId().toString());
+
+        if (includeAtomicNodeIds) {
+            atomicAnn.setAttribute("start_node_id", gateAnnotation.getStartNode().getId().toString());
+            atomicAnn.setAttribute("end_node_id", gateAnnotation.getEndNode().getId().toString());
+        }
 
         // gate features
         FeatureMap features = gateAnnotation.getFeatures();
@@ -148,7 +160,7 @@ public class GateUtils {
     /**
      * Extracts the annotations/type sets from provided parameter string.
      */
-    public static Map<String, Set<String>> getAnnotationTypeSets(String filterByAnnotations) {
+    public Map<String, Set<String>> getAnnotationTypeSets(String filterByAnnotations) {
 
         // firstly, get the list of filters, which are provided as a comma-separated list
         // in form: set1:type1, set2:type2, ...
@@ -200,8 +212,8 @@ public class GateUtils {
     /**
      * Perform intersection between specified filters.
      */
-    public static Map<String, Set<String>> getAnnotationTypesSetsIntersection(Map<String, Set<String>> typesSets1,
-                                                                              Map<String, Set<String>> typesSets2) {
+    public Map<String, Set<String>> getAnnotationTypesSetsIntersection(Map<String, Set<String>> typesSets1,
+                                                                       Map<String, Set<String>> typesSets2) {
         Map<String, Set<String>> resultSets = new HashMap<>();
 
         // TODO: special case: group is '*'
@@ -237,14 +249,14 @@ public class GateUtils {
     /**
      * Extracts the text from the GATE document.
      */
-    public static String getDocumentText(Document gateDoc) {
+    public String getDocumentText(Document gateDoc) {
         return gate.Utils.stringFor(gateDoc, 0L, gate.Utils.lengthLong(gateDoc));
     }
 
     /**
      * Checks whether the string is blank.
      */
-    public static Boolean isBlank(String text) {
+    public Boolean isBlank(String text) {
         return text.chars().allMatch(Character::isWhitespace);
     }
 }

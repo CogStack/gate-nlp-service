@@ -43,6 +43,8 @@ public class GateProcessor extends NlpProcessor {
 
     private GateApplicationSetupParameters params;
 
+    private GateUtils gateUtils = new GateUtils(false);
+
     private Logger log = LoggerFactory.getLogger(GateProcessor.class);
 
 
@@ -73,7 +75,7 @@ public class GateProcessor extends NlpProcessor {
 
         // check whether the document is empty
         //
-        if (GateUtils.isBlank(inDocument.getText())) {
+        if (gateUtils.isBlank(inDocument.getText())) {
             log.info("Provided document contains only whitespace characters");
             GenericDocument outDoc = new GenericDocument();
             outDoc.setText(inDocument.getText());
@@ -137,7 +139,7 @@ public class GateProcessor extends NlpProcessor {
 
                 // check whether the text is blank -- do not add such documents as GATE controller won't handle these
                 //
-                if (GateUtils.isBlank(doc.getText())) {
+                if (gateUtils.isBlank(doc.getText())) {
                     log.info("Provided document (idx: " + i + ") contains only whitespace characters");
                     gateDocuments.set(i, null);
                 }
@@ -273,7 +275,7 @@ public class GateProcessor extends NlpProcessor {
             return;
 
         if (params.getAnnotationSets().length() > 0) {
-            availableAnnotationSets = GateUtils.getAnnotationTypeSets(params.getAnnotationSets());
+            availableAnnotationSets = gateUtils.getAnnotationTypeSets(params.getAnnotationSets());
         }
     }
 
@@ -324,13 +326,13 @@ public class GateProcessor extends NlpProcessor {
         // select appropriate annotations set
         List<GenericAnnotation> anns;
         if (annSets != null)
-            anns = GateUtils.getAtomicAnnotations(gateDoc, annSets);
+            anns = gateUtils.getAtomicAnnotations(gateDoc, annSets);
         else
-            anns = GateUtils.getAtomicAnnotations(gateDoc);
+            anns = gateUtils.getAtomicAnnotations(gateDoc);
 
         // refine the annotations
         if (params.isIncludeAnotationText()) {
-            GateUtils.refineAtomicAnnotations(anns, gateDoc);
+            gateUtils.refineAtomicAnnotations(anns, gateDoc);
         }
 
         return anns;
@@ -363,7 +365,7 @@ public class GateProcessor extends NlpProcessor {
         List<GenericAnnotation> anns = extractAnnotations(gateDoc, runtimeParams);
         GenericAnnotation feats = extractFeatures(gateDoc, runtimeParams);
 
-        outDoc.setText(GateUtils.getDocumentText(gateDoc));
+        outDoc.setText(gateUtils.getDocumentText(gateDoc));
         outDoc.setAnnotations(anns);
         if (feats != null && feats.getAttributes().size() > 0) {
             outDoc.setDocumentFeatures(feats);
