@@ -1,6 +1,7 @@
 package nlp.common.model.protocol;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * The result of NLP processing over the input document.
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NlpProcessingResult {
     /**
      * The document content that was used or modified during processing.
