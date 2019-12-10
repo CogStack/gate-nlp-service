@@ -1,0 +1,29 @@
+plugins {
+    id "io.spring.dependency-management" version "1.0.8.RELEASE"
+}
+
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'io.spring.dependency-management'
+
+    group = 'nlp'
+    version = projectVersion
+
+    // this needs to be handled after applying 'java' plugin
+    sourceCompatibility = projectJavaVersion
+
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:2.1.2.RELEASE")
+        }
+    }
+
+}

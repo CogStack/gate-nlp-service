@@ -1,30 +1,51 @@
 package nlp.service.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+
 import java.util.Map;
 
 
 /**
- * The configuration of the NLP application that will be exposed to the API.
+ * NLP service-specific configuration. Parameters are set only once during the
+ * service initialization, cannot be modified during runtime.
  */
 @Data
-@Builder
+@Configuration
 public class ApplicationConfiguration {
-
+    /**
+     * General application details.
+     */
+    @Value("${application.name:#{null}}")
     @JsonProperty("name")
-    String name;
+    @JsonView(JsonPropertyAccessView.Public.class)
+    String appName;
 
+    @Value("${application.version:#{null}}")
     @JsonProperty("version")
-    String version;
+    @JsonView(JsonPropertyAccessView.Public.class)
+    String appVersion;
 
+    @Value("${application.language:#{null}}")
     @JsonProperty("lang")
-    String language;
+    @JsonView(JsonPropertyAccessView.Public.class)
+    String appLanguage;
+
+    @Value("${endpoint.single-doc.fail-on-empty-content:true}")
+    @JsonProperty("single_doc_endpoint_fail_on_empty_content")
+    @JsonView(JsonPropertyAccessView.Public.class)
+    boolean appSingleDocEndpointFailOnEmptyContent;
+
 
     /**
-     * Application-specific parameters.
+     * The application-specific parameters.
      */
+    @Value("#{${application.params}}")
     @JsonProperty("params")
-    Map<String, Object> parameters;
+    @JsonView(JsonPropertyAccessView.Public.class)
+    Map<String, Object> appParams;
 }

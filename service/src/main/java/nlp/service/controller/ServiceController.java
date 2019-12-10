@@ -1,16 +1,17 @@
 package nlp.service.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import nlp.common.model.protocol.*;
 import nlp.service.config.ApplicationConfiguration;
-import nlp.service.config.ServiceConfiguration;
-import nlp.service.service.NlpService;
+import nlp.service.config.JsonPropertyAccessView;
+import nlp.service.NlpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -20,8 +21,16 @@ import java.util.List;
 @RestController
 public class ServiceController {
 
+    /**
+     * The application configuration and the actual NLP service are autowired, they will
+     * be provided by the implementing service application.
+     */
     @Autowired
-    ServiceConfiguration config;
+    ApplicationConfiguration config;
+
+    @Autowired
+    private NlpService service;
+
 
     /**
      * Endpoints path specific configuration
@@ -31,45 +40,16 @@ public class ServiceController {
     //private final String apiVersion = "v1";
     private final String apiFullPath = apiPathPrefix;
 
-
-    /**
-     * The NLP service used.
-     */
-    private NlpService service;
-
     private Logger log = LoggerFactory.getLogger(ServiceController.class);
-
-
-    @PostConstruct
-    public void init() throws Exception {
-        service = getNlpService(config);
-    }
-
-
-    /**
-     * Instantiates the NLP application service Bean according to provided configuration.
-     */
-    private NlpService getNlpService(ServiceConfiguration config) throws Exception {
-        try {
-            String appClassName = config.getAppClassName();
-            return (NlpService) (Class.forName(appClassName)
-                    .getConstructor(ServiceConfiguration.class)
-                    .newInstance(config));
-        }
-        catch (Exception e) {
-            log.error("Cannot instantiate the NLP service: " + e.getMessage());
-            throw e;
-        }
-    }
 
 
     /**
      * Returns the information about running NLP service, incl. its configuration.
      */
+    @JsonView(JsonPropertyAccessView.Public.class)
     @GetMapping(value = apiFullPath + "/info")
     public ResponseEntity<ApplicationConfiguration> info() {
-        ApplicationConfiguration conf = config.getAppConfig();
-        return new ResponseEntity<>(conf, HttpStatus.OK);
+        return new ResponseEntity<>(config, HttpStatus.OK);
     }
 
 
@@ -86,10 +66,12 @@ public class ServiceController {
         if (content.getContent() == null || content.getContent().isEmpty()) {
             final String message = "Empty content";
             NlpProcessingResult result = new NlpProcessingResult();
+            result.setTimestamp(OffsetDateTime.now());
             result.setError(ProcessingError.builder().message(message).build());
             response.setResult(result);
             log.info(message);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            HttpStatus status = config.isAppSingleDocEndpointFailOnEmptyContent() ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+            return new ResponseEntity<>(response, status);
         }
 
         // process the content

@@ -1,31 +1,28 @@
 plugins {
     id 'io.franzbecker.gradle-lombok' version '2.0'
-    id 'java'
 }
 
-group 'nlp'
-version '0.0.1-SNAPSHOT'
-
-//sourceCompatibility = JavaVersion.VERSION_11
-sourceCompatibility = JavaVersion.VERSION_1_9
-
-repositories {
-    mavenCentral()
-    jcenter()
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
-
 
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.4'
 
+    // json serialization
+    compile 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.8'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8'
     compile 'com.fasterxml.jackson.core:jackson-core:2.9.8'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
 
     compile 'javax.validation:validation-api:2.0.1.Final'
 
-    annotationProcessor 'org.projectlombok:lombok:1.18.4'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    //testCompile group: 'junit', name: 'junit', version: '4.12'
-    //testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.1.0'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
 }

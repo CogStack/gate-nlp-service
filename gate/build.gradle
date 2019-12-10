@@ -3,31 +3,33 @@ plugins {
 }
 
 dependencies {
-    // inter-module deps
+    // inter-module dependencies
     //
     compile project(':common')
+    compile project(':service')
 
 
-    // library deps
+    // library dependencies
     //
     compileOnly 'org.projectlombok:lombok:1.18.4'
-
-    // json serialization
-    compile 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.8'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8'
-    compile 'com.fasterxml.jackson.core:jackson-core:2.9.8'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
+    // specific for GATE NLP
+    compile('uk.ac.gate:gate-core:8.5')
+
 
     // tests
     //
+    sourceSets {
+        // need test utils from 'service' module
+        test {
+            java.srcDir project(':service').file("src/test/java/")
+    }}
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.1.0'
@@ -36,14 +38,4 @@ dependencies {
 
     testRuntime("org.junit.platform:junit-platform-launcher:1.4.2")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.2")
-
-    // old JUnit configuration
-    //testImplementation('junit:junit:4.12')
-    //testRuntime("org.junit.vintage:junit-vintage-engine:5.4.2")
 }
-
-// INFO: uncomment below to run JUnit 5 tests
-//
-//test {
-//    useJUnitPlatform()
-//}
