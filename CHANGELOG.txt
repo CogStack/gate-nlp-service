@@ -1,3 +1,10 @@
+Release 0.3.0 -- 10 Dec 2019
+---------------
+* Included document processing timestamp in the response
+* Removed the 'gateway' module and focused only on the NLP runner service (currently, only GATE NLP apps runner)
+* Minor bugfixes and cleanup of GATE app parameters
+
+
 Release 0.2.0 -- 14 Jun 2019
 ---------------
 * Added processing documents in bulk mode (endpoint: /procees_bulk)
