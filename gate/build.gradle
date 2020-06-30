@@ -19,7 +19,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
     // specific for GATE NLP
-    compile('uk.ac.gate:gate-core:8.5')
+    compile('uk.ac.gate:gate-core:8.6.1')
 
 
     // tests

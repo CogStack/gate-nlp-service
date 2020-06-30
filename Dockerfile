@@ -91,20 +91,20 @@ FROM service-runner AS service-runner-gate
 WORKDIR /gate/
 
 # download and set up the main GATE bundle
-RUN curl -L 'https://github.com/GateNLP/gate-core/releases/download/v8.5/gate-developer-8.5-distro.zip' > gate-developer-8.5-distro.zip && \
-	unzip gate-developer-8.5-distro.zip && \
-	mv gate-developer-8.5 home && \
-	rm gate-developer-8.5-distro.zip
+RUN curl -L 'https://github.com/GateNLP/gate-core/releases/download/v8.6.1/gate-developer-8.6.1-distro.zip' > gate-developer-8.6.1-distro.zip && \
+	unzip gate-developer-8.6.1-distro.zip && \
+	mv gate-developer-8.6.1 home && \
+	rm gate-developer-8.6.1-distro.zip
 
 ENV GATE_HOME=/gate/home
 
 # download the GCP
 # -- warning: GCP v.3.0.1 uses GATE 8.5.1 and has a problem with a missing plugin
 # -- GCP v.3.0 uses GATE 8.5
-RUN curl -L 'https://github.com/GateNLP/gcp/releases/download/v3.0/gcp-dist-3.0-distro.zip' > gcp-dist-3.0-distro.zip && \
-	unzip gcp-dist-3.0-distro.zip && \
-	mv gcp-dist-3.0 gcp && \
-	rm gcp-dist-3.0-distro.zip
+RUN curl -L 'https://github.com/GateNLP/gcp/releases/download/v3.1.1/gcp-dist-3.1.1-distro.zip' > gcp-dist-3.1.1-distro.zip && \
+	unzip gcp-dist-3.1.1-distro.zip && \
+	mv gcp-dist-3.1.1 gcp && \
+	rm gcp-dist-3.1.1-distro.zip
 
 
 # copy the helper scripts
