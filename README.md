@@ -1,3 +1,7 @@
+# Archived
+This project is archived and no longer maintained. For NLP services in CogStack deployments, consider using [MedCAT](https://github.com/CogStack/MedCAT) within [CogStack-Nifi](https://github.com/CogStack/CogStack-NiFi/).
+
+
 # Introduction
 
 This project implements a [GATE NLP](https://gate.ac.uk/) application runner for text-processing that exposes a REST API for communication. The general idea is to be able send a text to NLP service and receive back the annotations. It uses [GATE Embedded](https://gate.ac.uk/family/embedded.html) to run any GATE application and uses [Spring Boot](https://spring.io/projects/spring-boot) implementing the web service.
